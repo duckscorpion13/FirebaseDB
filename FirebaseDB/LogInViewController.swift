@@ -12,6 +12,13 @@ import FirebaseAuth// 這邊的Auth，是指Authentication，「新增使用者U
 import FirebaseDatabase // 需要用到Database
 import GoogleSignIn
 
+struct ST_ROOM_MEMBER: Codable {
+//	let Name: String?
+	let ID: String?
+	let Group: Int = 0
+	
+}
+
 class LogInViewController: UIViewController {
     
 	@IBOutlet weak var signBtn: GIDSignInButton!	
@@ -87,21 +94,29 @@ class LogInViewController: UIViewController {
 		let ref = Database.database().reference(withPath: "Room/\(roomId)")
 		ref.child("Id").setValue(roomId)
 		ref.child("Host").setValue(self.uid)
-		ref.child("Group").setValue(1)
+		ref.child("Team").setValue(1)
 		ref.child("Title").setValue("Welcome")
 		ref.child("Message").setValue("Hello World!")
 		ref.child("Members").observe(.value) { (snapshot) in
 			if snapshot.hasChildren() {
 				var tmpArray = [String]()
 				for member in snapshot.children {
-					if let _member = member as? DataSnapshot,
-					let value = _member.value as? String {
-						tmpArray.append(value)
+					if let item = member as? DataSnapshot,
+					let dict = item.value as? [String : Any],
+					let name = dict["Name"] as? String {
+						tmpArray.append(name)
 					}
 				}
 				print(tmpArray)
 			} else {
-				ref.child("Members").setValue(["Andy","Bob","Candy","Dexter","Edwin"])
+				let names = ["Andy","Bob","Candy","Dexter","Edwin"]
+				for name in names {
+					let tmpId = names.index(of: name) ?? 0
+					ref.child("Members").child("\(tmpId)").child("Name").setValue(name)
+					ref.child("Members").child("\(tmpId)").child("Index").setValue(0)
+					ref.child("Members").child("\(tmpId)").child("Group").setValue(0)
+					ref.child("Members").child("\(tmpId)").child("Vote").setValue(0)
+				}
 			}
 		}
 	

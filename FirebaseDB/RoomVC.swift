@@ -34,9 +34,10 @@ class RoomVC: UIViewController {
 			if snapshot.hasChildren() {
 				self.m_members.removeAll()
 				for member in snapshot.children {
-					if let _member = member as? DataSnapshot,
-						let value = _member.value as? String {
-						self.m_members.append(value)
+					if let item = member as? DataSnapshot,
+						let dict = item.value as? [String : Any],
+						let name = dict["Name"] as? String {
+						self.m_members.append(name)
 					}
 				}
 				print(self.m_members)

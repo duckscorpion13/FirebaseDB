@@ -135,7 +135,7 @@
                                 </constraints>
                             </stackView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="success" translatesAutoresizingMaskIntoConstraints="NO" id="fK0-6S-kYs">
-                                <rect key="frame" x="70" y="50" width="274" height="130"/>
+                                <rect key="frame" x="70" y="50" width="274" height="130.00000000000011"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="130" id="EQ5-yW-Ce8"/>
                                 </constraints>
