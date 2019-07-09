@@ -16,11 +16,9 @@ class ChangeDataViewController: UIViewController {
     
     
     @IBOutlet weak var name: UITextField!
-    @IBOutlet weak var gender: UITextField!
-    @IBOutlet weak var email: UITextField!
     @IBOutlet weak var phone: UITextField!
-    
-    var uid = ""
+	@IBOutlet weak var gender: UISegmentedControl!
+	var uid = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,15 +38,8 @@ class ChangeDataViewController: UIViewController {
         
 		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
         ref.observe(.value, with: { (snapshot) in
-			if let gender = snapshot.value as? String {
-            	self.gender.text = gender
-			}
-        })
-        
-		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email")
-        ref.observe(.value, with: { (snapshot) in
-			if let email = snapshot.value as? String {
-            	self.email.text = email
+			if let gender = snapshot.value as? Int {
+            	self.gender.selectedSegmentIndex = gender
 			}
         })
         
@@ -122,10 +113,9 @@ class ChangeDataViewController: UIViewController {
     @IBAction func save(_ sender: Any) {
         
         
-        if name.text != "" && gender.text != "" && email.text != "" && phone.text != "" {
+        if name.text != "" && phone.text != "" {
 			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(name.text)
-			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender").setValue(gender.text)
-			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email").setValue(email.text)
+			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender").setValue(gender.selectedSegmentIndex)
 			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone").setValue(phone.text)
             
             

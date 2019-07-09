@@ -23,11 +23,6 @@ class ConfirmViewController: UIViewController {
     @IBOutlet weak var email_check: UILabel!
     @IBOutlet weak var phone_check: UILabel!
     
-    // 以下四個是純粹的姓名、性別、信箱、電話的Label，原先設立為 isHidden，按下按鈕才顯示出來
-    @IBOutlet weak var nameL: UILabel!
-    @IBOutlet weak var genderL: UILabel!
-    @IBOutlet weak var emailL: UILabel!
-    @IBOutlet weak var phoneL: UILabel!
     
     // 編輯個人資料Button(會前往另一個頁面)，原先也是 isHidden，按下按鈕才顯示出來
     @IBOutlet weak var changePersonalInfo: UIButton!
@@ -43,21 +38,16 @@ class ConfirmViewController: UIViewController {
         // 這裡即是 uid 所解釋的，將Firebase使用者uid儲存愛變數uid裡面，在viewDidLoad中取用一次，便可在這個viewController隨意使用
 		if let user = Auth.auth().currentUser {
             uid = user.uid
+			viewDetail()
         }
 
     }
     
     
-    @IBAction func viewDetail(_ sender: Any) {
+	func viewDetail() {
         
         // 指 ref 是 firebase中的特定路徑，導引到特定位置，像是「FIRDatabase.database().reference(withPath: "ID/\(self.uid)/Profile/Name")」
 		var ref: DatabaseReference!
-        
-        // 這只是將原先隱藏起來的label顯示出來
-        nameL.isHidden = false
-        genderL.isHidden = false
-        emailL.isHidden = false
-        phoneL.isHidden = false
         
         //從database抓取url，再從storage下載圖片
         //先在database找到存放url的路徑
@@ -107,8 +97,15 @@ class ConfirmViewController: UIViewController {
         // 下面就都一樣的意思，只是換成Gender、Email、Phone
 		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
         ref.observe(.value) { (snapshot) in
-			if let gender = snapshot.value as? String {
-            	self.gender_check.text = gender
+			if let gender = snapshot.value as? Int {
+				switch gender {
+				case 1:
+					self.gender_check.text = "man"
+				case 2:
+					self.gender_check.text = "woman"
+				default:
+					self.gender_check.text = "?"
+				}
             	self.gender_check.isHidden = false
 			}
         }

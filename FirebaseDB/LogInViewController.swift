@@ -14,8 +14,7 @@ import GoogleSignIn
 
 class LogInViewController: UIViewController {
     
-	@IBOutlet weak var signBtn: GIDSignInButton!
-	
+	@IBOutlet weak var signBtn: GIDSignInButton!	
 	@IBOutlet weak var Email: UITextField!
     @IBOutlet weak var Password: UITextField!
     
@@ -84,7 +83,29 @@ class LogInViewController: UIViewController {
     
     // 這是前往ConfirmViewController的按鈕，但在到下一個ViewController之前，先「在Firebase做登入的動作」
     @IBAction func LogIn_Button_Tapped(_ sender: Any) {
-        
+		let roomId = 12345
+		let ref = Database.database().reference(withPath: "Room/\(roomId)")
+		ref.child("Id").setValue(roomId)
+		ref.child("Host").setValue(self.uid)
+		ref.child("Group").setValue(1)
+		ref.child("Title").setValue("Welcome")
+		ref.child("Message").setValue("Hello World!")
+		ref.child("Members").observe(.value) { (snapshot) in
+			if snapshot.hasChildren() {
+				var tmpArray = [String]()
+				for member in snapshot.children {
+					if let _member = member as? DataSnapshot,
+					let value = _member.value as? String {
+						tmpArray.append(value)
+					}
+				}
+				print(tmpArray)
+			} else {
+				ref.child("Members").setValue(["Andy","Bob","Candy","Dexter","Edwin"])
+			}
+		}
+	
+	
         // 一樣要先假設 Email & Password 要輸入某些字喔！
         if self.Email.text != "" || self.Password.text != ""{
             
@@ -103,6 +124,10 @@ class LogInViewController: UIViewController {
                     //跳到確認頁
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
                     let nextVC = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID")as! ConfirmViewController
+					
+				
+
+					
                     self.present(nextVC,animated:true,completion:nil)
                 }
                 
@@ -159,13 +184,25 @@ extension LogInViewController: GIDSignInDelegate {
 			}
 			// User is signed in
 			// ...
-			print(authResult?.user.email)
+//			print(authResult?.user)
 			if let uid = authResult?.user.uid {
 				self.uid = uid
+				let ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
+				ref.observe(.value) { (snapshot) in
+					if let _ = snapshot.value as? String {
+					} else {
+						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(authResult?.user.displayName ?? nil)
+						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email").setValue(authResult?.user.email ?? nil)
+					}
+				}
+//				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo").setValue(authResult?.user.photoURL ?? nil)
+				
 			}
-//			Database.database().reference().child("users").child(self.uid).setValue(["username": "dsfdsffdsfdf"])
+			
+		
+
 			Database.database().reference(withPath: "Online-Status/\(self.uid)").setValue("ON")
-//			Database.database().reference().child("ID/\(self.uid)")).setValue(authResult?.user.email ?? "abc", forKey: "email")
+//		Database.database().reference().child("ID/\(self.uid)")).setValue(authResult?.user.email ?? "abc", forKey: "email")
 			//跳到確認頁
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
 			let nextVC = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID")as! ConfirmViewController
