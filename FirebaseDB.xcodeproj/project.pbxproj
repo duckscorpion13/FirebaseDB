@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		044FE5071E44808A00A7B5F5 /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE5061E44808A00A7B5F5 /* LogInViewController.swift */; };
 		044FE5091E4480B700A7B5F5 /* ChangeDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE5081E4480B700A7B5F5 /* ChangeDataViewController.swift */; };
 		044FE50B1E4480D700A7B5F5 /* ConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */; };
 		048F31031E433ECB007B579D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31021E433ECB007B579D /* AppDelegate.swift */; };
@@ -19,10 +18,10 @@
 		F924CA4922C0DADB00F23169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F924CA4822C0DADB00F23169 /* GoogleService-Info.plist */; };
 		F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9339E9622D5912700C3A795 /* DatabaseModel.swift */; };
 		F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96D1FE822D49153006F9242 /* RoomVC.swift */; };
+		F977DD3822D5D61B007A9BF8 /* LogInVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F977DD3722D5D61B007A9BF8 /* LogInVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		044FE5061E44808A00A7B5F5 /* LogInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		044FE5081E4480B700A7B5F5 /* ChangeDataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeDataViewController.swift; sourceTree = "<group>"; };
 		044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmViewController.swift; sourceTree = "<group>"; };
 		048F30FF1E433ECB007B579D /* FirebaseDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -38,6 +37,7 @@
 		F924CA4822C0DADB00F23169 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F9339E9622D5912700C3A795 /* DatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseModel.swift; sourceTree = "<group>"; };
 		F96D1FE822D49153006F9242 /* RoomVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomVC.swift; sourceTree = "<group>"; };
+		F977DD3722D5D61B007A9BF8 /* LogInVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				048F31021E433ECB007B579D /* AppDelegate.swift */,
-				044FE5061E44808A00A7B5F5 /* LogInViewController.swift */,
+				F977DD3722D5D61B007A9BF8 /* LogInVC.swift */,
 				F96D1FE822D49153006F9242 /* RoomVC.swift */,
 				048F31041E433ECB007B579D /* SignUpViewController.swift */,
 				044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */,
@@ -249,11 +249,11 @@
 			files = (
 				044FE50B1E4480D700A7B5F5 /* ConfirmViewController.swift in Sources */,
 				F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */,
+				F977DD3822D5D61B007A9BF8 /* LogInVC.swift in Sources */,
 				044FE5091E4480B700A7B5F5 /* ChangeDataViewController.swift in Sources */,
 				048F31051E433ECB007B579D /* SignUpViewController.swift in Sources */,
 				048F31031E433ECB007B579D /* AppDelegate.swift in Sources */,
 				F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */,
-				044FE5071E44808A00A7B5F5 /* LogInViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

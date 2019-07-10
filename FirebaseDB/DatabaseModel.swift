@@ -33,3 +33,10 @@ let DEF_ROOM_MEMBERS_NICKNAME = "Nickname"
 let DEF_ROOM_MEMBERS_VOTE = "Vote"
 
 //////////////////////////////////////////////////////////
+struct ST_MEMBER_INFO: Codable {
+	let candidate: Bool?
+	let team: Int?
+	let index: Int?
+	let nickname: String?
+	let vote: Int?
+}

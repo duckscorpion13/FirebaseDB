@@ -103,7 +103,7 @@ class SignUpViewController: UIViewController {
 
             //跳回登入頁
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let nextVC = storyboard.instantiateViewController(withIdentifier: "LogInViewControllerID") as! LogInViewController
+            let nextVC = storyboard.instantiateViewController(withIdentifier: "LogInViewControllerID") as! LoginVC
             self.present(nextVC, animated: true, completion: nil)
         
         }

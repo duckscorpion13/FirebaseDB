@@ -12,14 +12,8 @@ import FirebaseAuth// 這邊的Auth，是指Authentication，「新增使用者U
 import FirebaseDatabase // 需要用到Database
 import GoogleSignIn
 
-struct ST_ROOM_MEMBER: Codable {
-//	let Name: String?
-	let ID: String?
-	let Group: Int = 0
-	
-}
 
-class LogInViewController: UIViewController {
+class LoginVC: UIViewController {
     
 	@IBOutlet weak var signBtn: GIDSignInButton!	
 	@IBOutlet weak var Email: UITextField!
@@ -91,12 +85,13 @@ class LogInViewController: UIViewController {
     // 這是前往ConfirmViewController的按鈕，但在到下一個ViewController之前，先「在Firebase做登入的動作」
 	fileprivate func createRoom(_ roomId: Int) {
 		
-		let refRoom = Database.database().reference(withPath: "Room/\(roomId)")
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomId)")
 		refRoom.child(DEF_ROOM_HOST).setValue(self.uid)
 		refRoom.child(DEF_ROOM_GROUP).setValue(1)
 		refRoom.child(DEF_ROOM_TITLE).setValue("Welcome")
 		refRoom.child(DEF_ROOM_MESSAGE).setValue("Hello World!")
-		refRoom.child(DEF_ROOM_MEMBERS).observe(.value) { (snapshot) in
+	
+		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
 			if snapshot.hasChildren() {
 				var tmpArray = [String]()
 				for member in snapshot.children {
@@ -108,19 +103,24 @@ class LogInViewController: UIViewController {
 				}
 				print(tmpArray)
 			} else {
-				let names = ["Andy","Bob","Candy","Dexter","Edwin"]
+				let names = ["Andy", "Bob", "Candy", "Dexter", "Edwin", "Frank", "Gina"]
 				for name in names {
 					let tmpId = names.index(of: name) ?? 0
-					let refRoomMember = refRoom.child("Members").child("\(tmpId)")
-					refRoomMember.child(DEF_ROOM_MEMBERS_NICKNAME).setValue(name)
-					refRoomMember.child(DEF_ROOM_MEMBERS_INDEX).setValue(0)
-					refRoomMember.child(DEF_ROOM_MEMBERS_CANDIDATE).setValue(false)
-					refRoomMember.child(DEF_ROOM_MEMBERS_TEAM).setValue(0)
-					refRoomMember.child(DEF_ROOM_MEMBERS_VOTE).setValue(0)
-					//					refRoom.child("Members").child("\(tmpId)").child("Name").setValue(name)
-					//					refRoom.child("Members").child("\(tmpId)").child("Index").setValue(0)
-					//					refRoom.child("Members").child("\(tmpId)").child("Group").setValue(0)
-					//					refRoom.child("Members").child("\(tmpId)").child("Vote").setValue(0)
+//					let refRoomMember = refRoom.child("Members").child("\(tmpId)")
+					let values: [String : Any] =
+						[
+							DEF_ROOM_MEMBERS_NICKNAME : name,
+							DEF_ROOM_MEMBERS_INDEX : 0,
+							DEF_ROOM_MEMBERS_CANDIDATE : false,
+							DEF_ROOM_MEMBERS_TEAM : 0,
+							DEF_ROOM_MEMBERS_VOTE : 0
+						]
+					refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(tmpId)" : values])
+//					refRoomMember.child(DEF_ROOM_MEMBERS_NICKNAME).setValue(name)
+//					refRoomMember.child(DEF_ROOM_MEMBERS_INDEX).setValue(0)
+//					refRoomMember.child(DEF_ROOM_MEMBERS_CANDIDATE).setValue(false)
+//					refRoomMember.child(DEF_ROOM_MEMBERS_TEAM).setValue(0)
+//					refRoomMember.child(DEF_ROOM_MEMBERS_VOTE).setValue(0)
 				}
 			}
 		}
@@ -128,7 +128,7 @@ class LogInViewController: UIViewController {
 	
 	@IBAction func LogIn_Button_Tapped(_ sender: Any) {
 		createRoom(12345)
-	
+
         // 一樣要先假設 Email & Password 要輸入某些字喔！
         if self.Email.text != "" || self.Password.text != ""{
             
@@ -160,7 +160,7 @@ class LogInViewController: UIViewController {
     }   
 }
 
-extension LogInViewController: GIDSignInUIDelegate {
+extension LoginVC: GIDSignInUIDelegate {
 	// MARK: - GIDSignInUIDelegate Delegates
 	func sign(inWillDispatch signIn: GIDSignIn!, error: Error!) {
 		//myActivityIndicator.stopAnimating()
@@ -175,7 +175,7 @@ extension LogInViewController: GIDSignInUIDelegate {
 	}
 }
 
-extension LogInViewController: GIDSignInDelegate {
+extension LoginVC: GIDSignInDelegate {
 	@available(iOS 9.0, *)
 	func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any])
 		-> Bool {
