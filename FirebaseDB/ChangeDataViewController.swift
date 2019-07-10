@@ -27,24 +27,24 @@ class ChangeDataViewController: UIViewController {
             uid = user.uid
         }
     
-		var ref: DatabaseReference!
+		let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
         
-		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
-        ref.observe(.value, with: { (snapshot) in
+//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
+        refUser.child(DEF_USER_NAME).observe(.value, with: { (snapshot) in
 			if let name = snapshot.value as? String {
             	self.name.text = name
 			}
         })
         
-		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
-        ref.observe(.value, with: { (snapshot) in
+//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
+		refUser.child(DEF_USER_SEX).observe(.value, with: { (snapshot) in
 			if let gender = snapshot.value as? Int {
             	self.gender.selectedSegmentIndex = gender
 			}
         })
         
-		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone")
-        ref.observe(.value, with: { (snapshot) in
+//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone")
+      	refUser.child(DEF_USER_PHONE).observe(.value, with: { (snapshot) in
 			if let phone = snapshot.value as? String {
             	self.phone.text = phone
 			}
@@ -114,10 +114,14 @@ class ChangeDataViewController: UIViewController {
         
         
         if name.text != "" && phone.text != "" {
-			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(name.text)
-			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender").setValue(gender.selectedSegmentIndex)
-			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone").setValue(phone.text)
-            
+			let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+			refUser.child(DEF_USER_NAME).setValue(name.text)
+			refUser.child(DEF_USER_SEX).setValue(gender.selectedSegmentIndex)
+			refUser.child(DEF_USER_PHONE).setValue(phone.text)
+//			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(name.text)
+//			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender").setValue(gender.selectedSegmentIndex)
+//			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone").setValue(phone.text)
+			
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let nextVC = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID")as! ConfirmViewController
@@ -169,9 +173,9 @@ extension ChangeDataViewController: UIImagePickerControllerDelegate, UINavigatio
 					if let uploadImageUrl = data?.path {
 						print("Photo Url: \(uploadImageUrl)")
 						// 存放在database
-						let databaseRef = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
-						
-						databaseRef.setValue(uploadImageUrl) { (error, dataRef) in
+//						let databaseRef = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
+						let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+						refUser.child(DEF_USER_PHOTO).setValue(uploadImageUrl) { (error, dataRef) in
 							
 							if error != nil {
 								print("Database Error: \(error!.localizedDescription)")

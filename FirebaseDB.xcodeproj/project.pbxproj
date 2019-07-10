@@ -17,6 +17,7 @@
 		048F310D1E433ECB007B579D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 048F310B1E433ECB007B579D /* LaunchScreen.storyboard */; };
 		44AD9A6174E57C2B73E3288A /* Pods_FirebaseDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C180FFFF90CB99FF139021FC /* Pods_FirebaseDB.framework */; };
 		F924CA4922C0DADB00F23169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F924CA4822C0DADB00F23169 /* GoogleService-Info.plist */; };
+		F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9339E9622D5912700C3A795 /* DatabaseModel.swift */; };
 		F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96D1FE822D49153006F9242 /* RoomVC.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		87A7E045E32522E15AF64FD0 /* Pods-FirebaseDB.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirebaseDB.release.xcconfig"; path = "Target Support Files/Pods-FirebaseDB/Pods-FirebaseDB.release.xcconfig"; sourceTree = "<group>"; };
 		C180FFFF90CB99FF139021FC /* Pods_FirebaseDB.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FirebaseDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F924CA4822C0DADB00F23169 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F9339E9622D5912700C3A795 /* DatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseModel.swift; sourceTree = "<group>"; };
 		F96D1FE822D49153006F9242 /* RoomVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -78,6 +80,7 @@
 				044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */,
 				044FE5081E4480B700A7B5F5 /* ChangeDataViewController.swift */,
 				048F31061E433ECB007B579D /* Main.storyboard */,
+				F9339E9622D5912700C3A795 /* DatabaseModel.swift */,
 				048F31091E433ECB007B579D /* Assets.xcassets */,
 				048F310B1E433ECB007B579D /* LaunchScreen.storyboard */,
 				048F310E1E433ECB007B579D /* Info.plist */,
@@ -249,6 +252,7 @@
 				044FE5091E4480B700A7B5F5 /* ChangeDataViewController.swift in Sources */,
 				048F31051E433ECB007B579D /* SignUpViewController.swift in Sources */,
 				048F31031E433ECB007B579D /* AppDelegate.swift in Sources */,
+				F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */,
 				044FE5071E44808A00A7B5F5 /* LogInViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

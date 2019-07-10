@@ -26,17 +26,19 @@ class RoomVC: UIViewController {
 		
 		self.m_tableView.dataSource = self
 		self.m_tableView.delegate = self
+		
+		print(randomIndex(10))
 	}
 	
 	func getRoomInfo(_ roomId: Int) {
-		let ref = Database.database().reference(withPath: "Room/\(roomId)")
-		ref.child("Members").observe(.value) { (snapshot) in
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomId)")
+		refRoom.child(DEF_ROOM_MEMBERS).observe(.value) { (snapshot) in
 			if snapshot.hasChildren() {
 				self.m_members.removeAll()
 				for member in snapshot.children {
 					if let item = member as? DataSnapshot,
 						let dict = item.value as? [String : Any],
-						let name = dict["Name"] as? String {
+						let name = dict[DEF_ROOM_MEMBERS_NICKNAME] as? String {
 						self.m_members.append(name)
 					}
 				}
@@ -44,6 +46,18 @@ class RoomVC: UIViewController {
 				self.m_tableView.reloadData()
 			}
 		}
+	}
+	
+	func randomIndex(_ total: Int) -> [Int] {
+		var randomArray = [Int]()
+		while randomArray.count < total {
+			let number = Int.random(in: 0 ..< total)
+			if let _ = randomArray.firstIndex(of: number) {
+			} else {
+				randomArray.append(number)
+			}
+		}
+		return randomArray
 	}
 	
 	override func viewDidLoad() {

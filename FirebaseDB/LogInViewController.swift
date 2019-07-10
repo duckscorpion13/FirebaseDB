@@ -89,21 +89,20 @@ class LogInViewController: UIViewController {
     }
     
     // 這是前往ConfirmViewController的按鈕，但在到下一個ViewController之前，先「在Firebase做登入的動作」
-    @IBAction func LogIn_Button_Tapped(_ sender: Any) {
-		let roomId = 12345
-		let ref = Database.database().reference(withPath: "Room/\(roomId)")
-		ref.child("Id").setValue(roomId)
-		ref.child("Host").setValue(self.uid)
-		ref.child("Team").setValue(1)
-		ref.child("Title").setValue("Welcome")
-		ref.child("Message").setValue("Hello World!")
-		ref.child("Members").observe(.value) { (snapshot) in
+	fileprivate func createRoom(_ roomId: Int) {
+		
+		let refRoom = Database.database().reference(withPath: "Room/\(roomId)")
+		refRoom.child(DEF_ROOM_HOST).setValue(self.uid)
+		refRoom.child(DEF_ROOM_GROUP).setValue(1)
+		refRoom.child(DEF_ROOM_TITLE).setValue("Welcome")
+		refRoom.child(DEF_ROOM_MESSAGE).setValue("Hello World!")
+		refRoom.child(DEF_ROOM_MEMBERS).observe(.value) { (snapshot) in
 			if snapshot.hasChildren() {
 				var tmpArray = [String]()
 				for member in snapshot.children {
 					if let item = member as? DataSnapshot,
-					let dict = item.value as? [String : Any],
-					let name = dict["Name"] as? String {
+						let dict = item.value as? [String : Any],
+						let name = dict[DEF_ROOM_MEMBERS_NICKNAME] as? String {
 						tmpArray.append(name)
 					}
 				}
@@ -112,14 +111,23 @@ class LogInViewController: UIViewController {
 				let names = ["Andy","Bob","Candy","Dexter","Edwin"]
 				for name in names {
 					let tmpId = names.index(of: name) ?? 0
-					ref.child("Members").child("\(tmpId)").child("Name").setValue(name)
-					ref.child("Members").child("\(tmpId)").child("Index").setValue(0)
-					ref.child("Members").child("\(tmpId)").child("Group").setValue(0)
-					ref.child("Members").child("\(tmpId)").child("Vote").setValue(0)
+					let refRoomMember = refRoom.child("Members").child("\(tmpId)")
+					refRoomMember.child(DEF_ROOM_MEMBERS_NICKNAME).setValue(name)
+					refRoomMember.child(DEF_ROOM_MEMBERS_INDEX).setValue(0)
+					refRoomMember.child(DEF_ROOM_MEMBERS_CANDIDATE).setValue(false)
+					refRoomMember.child(DEF_ROOM_MEMBERS_TEAM).setValue(0)
+					refRoomMember.child(DEF_ROOM_MEMBERS_VOTE).setValue(0)
+					//					refRoom.child("Members").child("\(tmpId)").child("Name").setValue(name)
+					//					refRoom.child("Members").child("\(tmpId)").child("Index").setValue(0)
+					//					refRoom.child("Members").child("\(tmpId)").child("Group").setValue(0)
+					//					refRoom.child("Members").child("\(tmpId)").child("Vote").setValue(0)
 				}
 			}
 		}
+	}
 	
+	@IBAction func LogIn_Button_Tapped(_ sender: Any) {
+		createRoom(12345)
 	
         // 一樣要先假設 Email & Password 要輸入某些字喔！
         if self.Email.text != "" || self.Password.text != ""{
@@ -191,7 +199,7 @@ extension LogInViewController: GIDSignInDelegate {
 		let credential = GoogleAuthProvider.credential(withIDToken: authentication.idToken,
 													   accessToken: authentication.accessToken)
 		// ...
-		Auth.auth().signInAndRetrieveData(with: credential) { (authResult, error) in
+		Auth.auth().signIn(with: credential) { (authResult, error) in
 			if let error = error {
 				// ...
 				print(error)
@@ -202,12 +210,14 @@ extension LogInViewController: GIDSignInDelegate {
 //			print(authResult?.user)
 			if let uid = authResult?.user.uid {
 				self.uid = uid
-				let ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
-				ref.observe(.value) { (snapshot) in
+				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+				refUser.observe(.value) { (snapshot) in
 					if let _ = snapshot.value as? String {
 					} else {
-						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(authResult?.user.displayName ?? nil)
-						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email").setValue(authResult?.user.email ?? nil)
+						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
+						refUser.child(DEF_USER_MAIL).setValue(authResult?.user.email ?? nil)
+//						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(authResult?.user.displayName ?? nil)
+//						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email").setValue(authResult?.user.email ?? nil)
 					}
 				}
 //				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo").setValue(authResult?.user.photoURL ?? nil)
