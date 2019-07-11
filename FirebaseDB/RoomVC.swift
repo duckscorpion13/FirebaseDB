@@ -80,14 +80,15 @@ class RoomVC: UIViewController {
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
 		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
 			if snapshot.hasChildren() {
-				var index = 0
+				var i = 0
 				let randArray = self.randomIndex(Int(snapshot.childrenCount))
-				print(randArray)
+//				print(randArray)
 				for member in snapshot.children {
 					if let item = member as? DataSnapshot {
-						let team = randArray[index] % self.m_teamCount
+						let team = randArray[i] % self.m_teamCount
+						self.m_members[i].team = team
 						refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_TEAM : team])
-						index += 1
+						i += 1
 					}
 				}
 				
@@ -113,13 +114,15 @@ class RoomVC: UIViewController {
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
 		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
 			if snapshot.hasChildren() {
-				var index = 0
+				var i = 0
 				let randArray = self.randomIndex(Int(snapshot.childrenCount))
-				print(randArray)
+//				print(randArray)
 				for member in snapshot.children {
 					if let item = member as? DataSnapshot {
-						refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_INDEX:randArray[index]])
-						index += 1
+						let order = randArray[i]
+						self.m_members[i].index = order
+						refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_INDEX : order])
+						i += 1
 					}
 				}
 				
@@ -163,7 +166,7 @@ class RoomVC: UIViewController {
 		btn.setTitle("Sort", for: .normal)
 		btn.setTitleColor(.red, for: .normal)
 		view.addSubview(btn)
-		btn.addTarget(self, action: #selector(randamGroup), for: .touchUpInside)
+		btn.addTarget(self, action: #selector(randamSort), for: .touchUpInside)
 		
 		getRoomInfo()
         // Do any additional setup after loading the view.
