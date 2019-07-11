@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="qnU-Aj-Ak3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina5_5" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
@@ -25,7 +25,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BoA-Bs-pso" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-905" y="33"/>
+            <point key="canvasLocation" x="-905.79710144927549" y="32.608695652173914"/>
         </scene>
         <!--LoginVC-->
         <scene sceneID="tne-QT-ifu">
@@ -165,7 +165,7 @@
                                 </constraints>
                             </stackView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="success" translatesAutoresizingMaskIntoConstraints="NO" id="fK0-6S-kYs">
-                                <rect key="frame" x="20" y="50" width="374" height="310.33333333333331"/>
+                                <rect key="frame" x="20" y="50" width="374" height="310.33333333333343"/>
                             </imageView>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" alignment="top" spacing="24" translatesAutoresizingMaskIntoConstraints="NO" id="C3w-jE-V5b">
                                 <rect key="frame" x="40" y="380.33333333333331" width="334" height="220.66666666666669"/>
@@ -317,39 +317,39 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Modify Infomation" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FpB-Lk-MuG">
-                                <rect key="frame" x="121" y="77" width="172" height="26.333333333333329"/>
+                                <rect key="frame" x="121" y="80" width="172" height="26.333333333333329"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="22"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="udq-yt-kZB">
-                                <rect key="frame" x="190" y="510" width="34" height="30"/>
+                            <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="udq-yt-kZB">
+                                <rect key="frame" x="190" y="646" width="34" height="30"/>
                                 <state key="normal" title="Save"/>
                                 <connections>
                                     <action selector="save:" destination="BvR-qf-C0U" eventType="touchUpInside" id="UPd-fL-sti"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="bE4-Bd-xlA">
-                                <rect key="frame" x="185.66666666666666" y="154.33333333333334" width="43" height="33.666666666666657"/>
+                                <rect key="frame" x="50" y="157.33333333333337" width="314" height="220.66666666666663"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="tintColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Photo"/>
                                 <connections>
-                                    <action selector="uploadImage:" destination="BvR-qf-C0U" eventType="touchUpInside" id="wl5-gh-tkE"/>
+                                    <action selector="openImgPC:" destination="BvR-qf-C0U" eventType="touchUpInside" id="SrO-gI-VhT"/>
                                 </connections>
                             </button>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="64" translatesAutoresizingMaskIntoConstraints="NO" id="PEX-dX-Vf6">
-                                <rect key="frame" x="104" y="231" width="206" height="198"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="25" translatesAutoresizingMaskIntoConstraints="NO" id="PEX-dX-Vf6">
+                                <rect key="frame" x="70" y="408" width="274" height="208"/>
                                 <subviews>
-                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Name" textAlignment="center" clearsOnBeginEditing="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vEu-1x-Trm">
-                                        <rect key="frame" x="0.0" y="0.0" width="206" height="21"/>
+                                    <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Name" textAlignment="center" clearsOnBeginEditing="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="vEu-1x-Trm">
+                                        <rect key="frame" x="0.0" y="0.0" width="274" height="52.666666666666664"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
                                     </textField>
-                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="I5e-LF-DFu">
-                                        <rect key="frame" x="0.0" y="85" width="206" height="29"/>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="I5e-LF-DFu">
+                                        <rect key="frame" x="0.0" y="77.666666666666686" width="274" height="53.666666666666657"/>
                                         <segments>
                                             <segment title="?"/>
                                             <segment title="man"/>
@@ -357,7 +357,7 @@
                                         </segments>
                                     </segmentedControl>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="line" placeholder="Phone" textAlignment="center" clearsOnBeginEditing="YES" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="x6B-Op-GmA">
-                                        <rect key="frame" x="0.0" y="177" width="206" height="21"/>
+                                        <rect key="frame" x="0.0" y="155.33333333333337" width="274" height="52.666666666666657"/>
                                         <nil key="textColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits"/>
@@ -367,22 +367,25 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="centerX" secondItem="bE4-Bd-xlA" secondAttribute="centerX" id="A7u-ES-ccF"/>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="centerX" secondItem="FpB-Lk-MuG" secondAttribute="centerX" id="Drc-qS-YrA"/>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="top" secondItem="bE4-Bd-xlA" secondAttribute="bottom" constant="43" id="FVq-zJ-d9c"/>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="centerX" secondItem="LWc-Sd-YTy" secondAttribute="centerX" id="GXZ-es-Fyu"/>
-                            <constraint firstItem="udq-yt-kZB" firstAttribute="top" secondItem="PEX-dX-Vf6" secondAttribute="bottom" constant="81" id="INH-KZ-F44"/>
+                            <constraint firstItem="udq-yt-kZB" firstAttribute="centerX" secondItem="LWc-Sd-YTy" secondAttribute="centerX" id="Aop-5V-DRA"/>
+                            <constraint firstItem="udq-yt-kZB" firstAttribute="top" secondItem="PEX-dX-Vf6" secondAttribute="bottom" constant="30" id="INH-KZ-F44"/>
+                            <constraint firstItem="FpB-Lk-MuG" firstAttribute="centerX" secondItem="LWc-Sd-YTy" secondAttribute="centerX" id="LkC-GD-iSB"/>
                             <constraint firstItem="bE4-Bd-xlA" firstAttribute="top" secondItem="FpB-Lk-MuG" secondAttribute="bottom" constant="51" id="Otd-Ks-lsb"/>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="centerX" secondItem="udq-yt-kZB" secondAttribute="centerX" id="UII-YA-k87"/>
-                            <constraint firstItem="FpB-Lk-MuG" firstAttribute="top" secondItem="0Yl-n2-XVK" secondAttribute="bottom" constant="57" id="YrH-wD-6yZ"/>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="leading" secondItem="LWc-Sd-YTy" secondAttribute="leadingMargin" constant="84" id="wOv-Tx-i2n"/>
-                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="top" secondItem="LWc-Sd-YTy" secondAttribute="top" constant="231" id="zwj-xI-SaN"/>
+                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="top" secondItem="bE4-Bd-xlA" secondAttribute="bottom" constant="30" id="YX6-wt-cup"/>
+                            <constraint firstItem="FpB-Lk-MuG" firstAttribute="top" secondItem="0Yl-n2-XVK" secondAttribute="bottom" constant="60" id="YrH-wD-6yZ"/>
+                            <constraint firstItem="bE4-Bd-xlA" firstAttribute="height" secondItem="LWc-Sd-YTy" secondAttribute="height" multiplier="0.3" id="dGS-IC-uva"/>
+                            <constraint firstItem="U3u-1k-wDN" firstAttribute="top" secondItem="udq-yt-kZB" secondAttribute="bottom" constant="60" id="jeR-we-j0g"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="bE4-Bd-xlA" secondAttribute="trailing" constant="30" id="k22-6S-Qb6"/>
+                            <constraint firstItem="PEX-dX-Vf6" firstAttribute="leading" secondItem="LWc-Sd-YTy" secondAttribute="leadingMargin" constant="50" id="wOv-Tx-i2n"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="PEX-dX-Vf6" secondAttribute="trailing" constant="50" id="ycz-Kd-S4T"/>
+                            <constraint firstItem="bE4-Bd-xlA" firstAttribute="leading" secondItem="LWc-Sd-YTy" secondAttribute="leadingMargin" constant="30" id="z0R-OI-Tng"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="gender" destination="I5e-LF-DFu" id="7LJ-vK-IJh"/>
                         <outlet property="name" destination="vEu-1x-Trm" id="Qes-yy-fjN"/>
                         <outlet property="phone" destination="x6B-Op-GmA" id="QiT-Ut-4ME"/>
+                        <outlet property="photo" destination="bE4-Bd-xlA" id="PWH-0H-oHx"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="DLt-Qj-Wcy" userLabel="First Responder" sceneMemberID="firstResponder"/>

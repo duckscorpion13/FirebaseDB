@@ -23,32 +23,41 @@ class ConfirmViewController: UIViewController {
     @IBOutlet weak var email_check: UILabel!
     @IBOutlet weak var phone_check: UILabel!
     
-    
     // 編輯個人資料Button(會前往另一個頁面)，原先也是 isHidden，按下按鈕才顯示出來
     @IBOutlet weak var changePersonalInfo: UIButton!
     // 登出Button，原先也是 isHidden，按下按鈕才顯示出來
     @IBOutlet weak var logOut: UIButton!
     
     // LogInViewController 有詳細說明 uid ，這邊就不再重複了
-    var uid = ""
+    var m_userId = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // 這裡即是 uid 所解釋的，將Firebase使用者uid儲存愛變數uid裡面，在viewDidLoad中取用一次，便可在這個viewController隨意使用
 		if let user = Auth.auth().currentUser {
-            uid = user.uid
+            m_userId = user.uid
 			viewDetail()
         }
 
+		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
+		btn.setTitle("Room", for: .normal)
+		btn.setTitleColor(.red, for: .normal)
+		view.addSubview(btn)
+		btn.addTarget(self, action: #selector(enterRoom), for: .touchUpInside)
     }
-    
+	
+	@objc func enterRoom() {
+		let vc = RoomVC()
+		vc.view.backgroundColor = .lightGray
+		self.present(vc, animated: true)
+	}
     
 	func viewDetail() {
         
         // 指 ref 是 firebase中的特定路徑，導引到特定位置，像是「FIRDatabase.database().reference(withPath: "ID/\(self.uid)/Profile/Name")」
 //		var ref: DatabaseReference!
-        let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+        let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
         //從database抓取url，再從storage下載圖片
         //先在database找到存放url的路徑
 //		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
@@ -65,7 +74,11 @@ class ConfirmViewController: UIViewController {
                     	return
                 	}
 				
-                	guard let imageData = UIImage(data: data!) else {
+					guard let _data = data else {
+						return
+					}
+					
+                	guard let imageData = UIImage(data: _data) else {
 						return
 					}
 				
@@ -138,15 +151,19 @@ class ConfirmViewController: UIViewController {
     @IBAction func changePersonInfo(_ sender: Any) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let nextVC = storyboard.instantiateViewController(withIdentifier: "ChangeDataViewControllerID")as! ChangeDataViewController
-        self.present(nextVC,animated:true,completion:nil)
-
+		if let vc = storyboard.instantiateViewController(withIdentifier: "ChangeDataViewControllerID") as? ChangeDataViewController {
+			if let img = self.loadImage.image {
+				print(img.size)
+				vc.m_image = img
+			}
+			self.present(vc, animated: true)
+		}
     }
     
     // 前往 LogInViewController，先在Firebase中登出，並返回到最一開始的頁面
     @IBAction func logOut(_ sender: Any) {
         
-		let ref = Database.database().reference(withPath: "Online-Status/\(uid)")
+		let ref = Database.database().reference(withPath: "Online-Status/\(m_userId)")
         // Database 的 Online-Status: "OFF"
         ref.setValue("OFF")
         // Authentication 也 SignOut

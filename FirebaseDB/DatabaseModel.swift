@@ -30,13 +30,16 @@ let DEF_ROOM_MEMBERS_CANDIDATE = "Candidate"
 let DEF_ROOM_MEMBERS_TEAM = "Team"
 let DEF_ROOM_MEMBERS_INDEX = "Index"
 let DEF_ROOM_MEMBERS_NICKNAME = "Nickname"
-let DEF_ROOM_MEMBERS_VOTE = "Vote"
+let DEF_ROOM_MEMBERS_VOTED = "Voted"
+let DEF_ROOM_MEMBERS_POLL = "Poll"
 
 //////////////////////////////////////////////////////////
 struct ST_MEMBER_INFO: Codable {
+	var uid: String?
 	var candidate: Bool?
 	var team: Int?
 	var index: Int?
 	var nickname: String?
-	var vote: Int?
+	var voted: Bool?
+	var poll: Int?
 }

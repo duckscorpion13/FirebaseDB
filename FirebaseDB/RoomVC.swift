@@ -8,21 +8,24 @@
 
 import UIKit
 import FirebaseDatabase
+import FirebaseStorage
 
 class RoomVC: UIViewController {
 
 	var m_isSort = false
 	var m_isGroup = false
 	var m_userId = ""
-	var m_roomId = 12345
+	var m_roomId = 11111
 	var m_teamCount = 3
-	var m_tableView = UITableView()
+	var m_tableView = UITableView(frame: .zero, style: .grouped)
 	var m_members = [ST_MEMBER_INFO]()
 	var m_sortMembers = [ST_MEMBER_INFO]()
 	var m_groupMembers = [[ST_MEMBER_INFO]]()
+	var m_imgMap = [String : UIImage]()
+	
 	fileprivate func setupTableView() {
 		
-		self.m_tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+		self.m_tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "Cell")
 		
 		self.m_tableView.translatesAutoresizingMaskIntoConstraints = false
 		self.view.addSubview(self.m_tableView)
@@ -45,7 +48,8 @@ class RoomVC: UIViewController {
 				DEF_ROOM_MEMBERS_INDEX : 0,
 				DEF_ROOM_MEMBERS_CANDIDATE : false,
 				DEF_ROOM_MEMBERS_TEAM : 0,
-				DEF_ROOM_MEMBERS_VOTE : 0
+				DEF_ROOM_MEMBERS_VOTED : false,
+				DEF_ROOM_MEMBERS_POLL : 0,
 			]
 		refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(m_userId)":values])
 	}
@@ -60,11 +64,14 @@ class RoomVC: UIViewController {
 					if let item = member as? DataSnapshot,
 					let dict = item.value as? [String : Any],
 					let name = dict[DEF_ROOM_MEMBERS_NICKNAME] as? String {
-						let info = ST_MEMBER_INFO(candidate: dict[DEF_ROOM_MEMBERS_CANDIDATE] as? Bool,
+						self.getPhoto(item.key)
+						let info = ST_MEMBER_INFO(uid: item.key,
+												candidate: dict[DEF_ROOM_MEMBERS_CANDIDATE] as? Bool,
 												  team: dict[DEF_ROOM_MEMBERS_TEAM] as? Int,
 												  index: dict[DEF_ROOM_MEMBERS_INDEX] as? Int,
 												  nickname: name,
-												  vote: dict[DEF_ROOM_MEMBERS_VOTE] as? Int)
+												  voted: dict[DEF_ROOM_MEMBERS_VOTED] as? Bool,
+												  poll: dict[DEF_ROOM_MEMBERS_POLL] as? Int)
 						self.m_members.append(info)
 					}
 				}
@@ -75,6 +82,39 @@ class RoomVC: UIViewController {
 			}
 		}
 	}
+	
+	func getPhoto(_ userId: String) {
+		
+		let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(userId)")
+		//從database抓取url，再從storage下載圖片
+		//先在database找到存放url的路徑
+		//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
+		//observe 到 .value
+		refUser.child(DEF_USER_PHOTO).observe(.value) { (snapshot) in
+			//存放在這個 url
+			if let url = snapshot.value as? String {
+				let maxSize : Int64 =  2 * 1024 * 1024 //大小：2MB，可視情況改變
+				//從Storage抓這個圖片
+				Storage.storage().reference().child(url).getData(maxSize: maxSize) { (data, error) in
+					if error != nil {
+						print(error.debugDescription)
+						return
+					}
+					
+					guard let _data = data else {
+						return
+					}
+					
+					guard let imageData = UIImage(data: _data) else {
+						return
+					}
+					
+					self.m_imgMap[userId] = imageData
+				}
+			}
+		}
+	}
+	
 	@objc func randamGroup() {
 		self.m_isGroup = true
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
@@ -98,14 +138,9 @@ class RoomVC: UIViewController {
 					let array = self.m_members.filter { member in
 						return member.team == i
 					}
-					print(array)
+//					print(array)
 					self.m_groupMembers.append(array)
 				}
-				
-				DispatchQueue.main.async {
-					self.m_tableView.reloadData()
-				}
-				
 			}
 		}
 	}
@@ -133,16 +168,11 @@ class RoomVC: UIViewController {
 						self.m_sortMembers.append(member)
 					}
 				}
-			
-				DispatchQueue.main.async {
-					self.m_tableView.reloadData()
-				}
-				
 			}
 		}
 	}
 	
-	func randomIndex(_ total: Int) -> [Int] {
+	fileprivate func randomIndex(_ total: Int) -> [Int] {
 		var randomArray = [Int]()
 		while randomArray.count < total {
 			let number = Int.random(in: 0 ..< total)
@@ -156,9 +186,6 @@ class RoomVC: UIViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
-
-	
-		
 		
 		setupTableView()
 		
@@ -166,7 +193,7 @@ class RoomVC: UIViewController {
 		btn.setTitle("Sort", for: .normal)
 		btn.setTitleColor(.red, for: .normal)
 		view.addSubview(btn)
-		btn.addTarget(self, action: #selector(randamSort), for: .touchUpInside)
+		btn.addTarget(self, action: #selector(randamGroup), for: .touchUpInside)
 		
 		getRoomInfo()
         // Do any additional setup after loading the view.
@@ -195,13 +222,28 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MyTableViewCell
+		
 		if(m_isGroup) {
 			let member = self.m_groupMembers[indexPath.section][indexPath.row]
-			cell.textLabel?.text = member.nickname
+			cell.nameLabel.text = member.nickname
+			cell.detailLabel.text = "\(member.poll ?? 0)"
+			let uid = member.uid ?? ""
+			if let _ = self.m_imgMap.index(forKey: uid) {
+				cell.imgView.image = self.m_imgMap[uid]
+			} else {
+				cell.imgView.image = UIImage(named: "smile")
+			}
 		} else {
 			let member = m_isSort ? self.m_sortMembers[indexPath.row] : self.m_members[indexPath.row]
-			cell.textLabel?.text = member.nickname
+			cell.nameLabel.text = member.nickname
+			cell.detailLabel.text = "\(member.poll ?? 0)"
+			let uid = member.uid ?? ""
+			if let _ = self.m_imgMap.index(forKey: uid) {
+				cell.imgView.image = self.m_imgMap[uid]
+			} else {
+				cell.imgView.image = UIImage(named: "smile")
+			}
 		}
 		return cell
 	}

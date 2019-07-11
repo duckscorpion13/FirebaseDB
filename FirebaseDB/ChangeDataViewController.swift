@@ -15,36 +15,41 @@ import FirebaseStorage
 class ChangeDataViewController: UIViewController {
     
     
-    @IBOutlet weak var name: UITextField!
+	@IBOutlet weak var photo: UIButton!
+	@IBOutlet weak var name: UITextField!
     @IBOutlet weak var phone: UITextField!
 	@IBOutlet weak var gender: UISegmentedControl!
-	var uid = ""
-    
+	var m_userId = ""
+	var m_image: UIImage? = nil
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
+		self.photo.setBackgroundImage(m_image, for: .normal)
+		self.m_image = nil
+		
 		if let user = Auth.auth().currentUser {
-            uid = user.uid
+            m_userId = user.uid
         }
     
-		let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+		let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
         
 //		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
-        refUser.child(DEF_USER_NAME).observe(.value, with: { (snapshot) in
+        refUser.child(DEF_USER_NAME).observeSingleEvent(of: .value, with: { (snapshot) in
 			if let name = snapshot.value as? String {
             	self.name.text = name
 			}
         })
         
 //		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
-		refUser.child(DEF_USER_SEX).observe(.value, with: { (snapshot) in
+		refUser.child(DEF_USER_SEX).observeSingleEvent(of: .value, with: { (snapshot) in
 			if let gender = snapshot.value as? Int {
             	self.gender.selectedSegmentIndex = gender
 			}
         })
         
 //		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone")
-      	refUser.child(DEF_USER_PHONE).observe(.value, with: { (snapshot) in
+		refUser.child(DEF_USER_PHONE).observeSingleEvent(of: .value, with: { (snapshot) in
 			if let phone = snapshot.value as? String {
             	self.phone.text = phone
 			}
@@ -56,9 +61,9 @@ class ChangeDataViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
     
-    
-    @IBAction func uploadImage(_ sender: Any) {
+    @IBAction func openImgPC(_ sender: Any) {
         
         // 建立一個 UIImagePickerController 的實體
         let imagePickerController = UIImagePickerController()
@@ -109,23 +114,50 @@ class ChangeDataViewController: UIViewController {
         
 
     }
-    
+	
+	fileprivate func uploadImage(_ image: UIImage) {
+		
+		let uniqueString = UUID().uuidString
+		let storageRef = Storage.storage().reference().child("\(uniqueString).jpg")
+		if let uploadData = image.jpegData(compressionQuality: 0.1) {
+			// 這行就是 FirebaseStorage 關鍵的存取方法。
+			storageRef.putData(uploadData, metadata: nil) { (data, error) in
+				if error != nil {
+					//					print("Error: \(error!.localizedDescription)")
+					return
+				}
+				
+				if let uploadImageUrl = data?.path {
+					//					print("Photo Url: \(uploadImageUrl)")
+					
+					let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
+					refUser.child(DEF_USER_PHOTO).setValue(uploadImageUrl) { (error, dataRef) in
+						
+						if error != nil {
+							print("Database Error: \(error!.localizedDescription)")
+						} else {
+							print("圖片已儲存")
+						}
+					}
+				}
+			}
+		}
+	}
+	
     @IBAction func save(_ sender: Any) {
         
         
         if name.text != "" && phone.text != "" {
-			let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+			let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
 			refUser.child(DEF_USER_NAME).setValue(name.text)
 			refUser.child(DEF_USER_SEX).setValue(gender.selectedSegmentIndex)
 			refUser.child(DEF_USER_PHONE).setValue(phone.text)
-//			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(name.text)
-//			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender").setValue(gender.selectedSegmentIndex)
-//			Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone").setValue(phone.text)
+		
+			if let img = self.m_image {
+				uploadImage(img)
+			}
 			
-            
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let nextVC = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID")as! ConfirmViewController
-            self.present(nextVC,animated:true,completion:nil)
+			self.dismiss(animated: true)
         }
         
 
@@ -134,60 +166,19 @@ class ChangeDataViewController: UIViewController {
 }
 
 extension ChangeDataViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+	
+	
+	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 		
-        var selectedImageFromPicker: UIImage?
-        
+		
         // 取得從 UIImagePickerController 選擇的檔案
-        if let pickedImage = info[.originalImage] as? UIImage {
-            selectedImageFromPicker = pickedImage
-        }
-        
-        // 可以自動產生一組獨一無二的 ID 號碼，方便等一下上傳圖片的命名
-        let uniqueString = UUID().uuidString
-        
-        
-		guard let user = Auth.auth().currentUser else {
+        guard let pickedImage = info[.originalImage] as? UIImage else {
 			return
 		}
-		uid = user.uid
-
-		let storageRef = Storage.storage().reference().child("\(uniqueString).jpg")
-		// 當判斷有 selectedImage 時，我們會在 if 判斷式裡將圖片上傳
-		guard let selectedImage = selectedImageFromPicker else {
-			return
-		}
-			
-		if let uploadData = selectedImage.jpegData(compressionQuality: 0.5) {
-			// 這行就是 FirebaseStorage 關鍵的存取方法。
-			storageRef.putData(uploadData, metadata: nil) { (data, error) in
-				if error != nil {
-				// 若有接收到錯誤，我們就直接印在 Console 就好，在這邊就不另外做處理。
-					print("Error: \(error!.localizedDescription)")
-					return
-				}
-                        
-				// 連結取得方式就是：data?.downloadURL()?.absoluteString。
-//				storageRef.downloadURL { (url, error) in
-					// 我們可以 print 出來看看這個連結事不是我們剛剛所上傳的照片。
-					if let uploadImageUrl = data?.path {
-						print("Photo Url: \(uploadImageUrl)")
-						// 存放在database
-//						let databaseRef = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
-						let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
-						refUser.child(DEF_USER_PHOTO).setValue(uploadImageUrl) { (error, dataRef) in
-							
-							if error != nil {
-								print("Database Error: \(error!.localizedDescription)")
-							} else {
-								print("圖片已儲存")
-							}
-						}
-					}
-//				}
-			}
-		}
-		dismiss(animated: true, completion: nil)
-	}//uid
+		
+		self.photo.setBackgroundImage(pickedImage, for: .normal)
+		self.m_image = pickedImage
+		picker.dismiss(animated: true)
+	}
 }
 

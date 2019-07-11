@@ -113,7 +113,8 @@ class LoginVC: UIViewController {
 							DEF_ROOM_MEMBERS_INDEX : 0,
 							DEF_ROOM_MEMBERS_CANDIDATE : false,
 							DEF_ROOM_MEMBERS_TEAM : 0,
-							DEF_ROOM_MEMBERS_VOTE : 0
+							DEF_ROOM_MEMBERS_VOTED : false,
+							DEF_ROOM_MEMBERS_POLL: 0
 						]
 					refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(tmpId)" : values])
 //					refRoomMember.child(DEF_ROOM_MEMBERS_NICKNAME).setValue(name)
@@ -127,7 +128,7 @@ class LoginVC: UIViewController {
 	}
 	
 	@IBAction func LogIn_Button_Tapped(_ sender: Any) {
-		createRoom(12345)
+		createRoom(11111)
 
         // 一樣要先假設 Email & Password 要輸入某些字喔！
         if self.Email.text != "" || self.Password.text != ""{
@@ -211,7 +212,7 @@ extension LoginVC: GIDSignInDelegate {
 			if let uid = authResult?.user.uid {
 				self.uid = uid
 				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
-				refUser.observe(.value) { (snapshot) in
+				refUser.observeSingleEvent(of: .value) { (snapshot) in
 					if let _ = snapshot.value as? String {
 					} else {
 						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
@@ -230,8 +231,9 @@ extension LoginVC: GIDSignInDelegate {
 //		Database.database().reference().child("ID/\(self.uid)")).setValue(authResult?.user.email ?? "abc", forKey: "email")
 			//跳到確認頁
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			let nextVC = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID")as! ConfirmViewController
-			self.present(nextVC,animated:true,completion:nil)
+			if let vc = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID") as? ConfirmViewController {
+				self.present(vc, animated: true)
+			}
 		}
 	}
 	
