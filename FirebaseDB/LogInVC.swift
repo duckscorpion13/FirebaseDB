@@ -25,7 +25,8 @@ class LoginVC: UIViewController {
     // 前者 uid 即是指 「var uid = ""」的 uid，而後者的 uid 是指 「Firebase - Auth 的 使用者UID」
     // 意思就是「將Firebase使用者uid儲存愛變數uid中」，因為 var 代表「變數」，最終就變成 var uid = "Avdfu12ejsiod9"
     // 這樣，在我們需要使用者UID的時候（不論「從Firebase拿取資料」或是「從手機將資料放置到Firebase」皆需要用到）就可以輕易使用了！
-    var uid = ""
+	
+	var uid = ""
     
     
     override func viewDidLoad() {
@@ -56,8 +57,8 @@ class LoginVC: UIViewController {
             // FIRAuth.auth()?.createUser(withEmail: String, password: String, completion: FIRAuthResultCallback?)，
             // 那怎麼變成 completion: { (user, error) in 這樣的呢？
             // 其實很簡單，只要在藍藍的 FIRAuthResultCallback? 按個 enter(return) 鍵，就會變成這樣囉
-//			Auth.auth().createUser(withEmail: self.Email.text!, password: self.Password.text!, completion: { (user, error) in
-			Auth.auth().createUser(withEmail: "duckscorpion13@gmail.com", password: "abc123", completion: { (user, error) in
+			Auth.auth().createUser(withEmail: self.Email.text!, password: self.Password.text!, completion: { (user, error) in
+//			Auth.auth().createUser(withEmail: "ducksky13@gmail.com", password: "abc123", completion: { (user, error) in
                 if error == nil{
 					if let user = Auth.auth().currentUser{
                         
@@ -72,12 +73,12 @@ class LoginVC: UIViewController {
                 //「新增使用者」、「在Database中新增一個Safety-Check:"ON"」，接著就跳到註冊頁
                 // 另外提醒，這邊要在 Main.storyboard，Show Utilities，Identity inspector(左邊數來第三個)
                 // storyboardID 要記得改名字，像是這裡的SignUpViewController，要在storyboardID改成SignUpViewControllerID
-				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Safety-Check").setValue("ON")
-                
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                let nextVC =  storyboard.instantiateViewController(withIdentifier: "SignUpViewControllerID") as! SignUpViewController
-                self.present(nextVC, animated: true, completion: nil)
-                
+//				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Safety-Check").setValue("ON")
+				
+//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//                let nextVC =  storyboard.instantiateViewController(withIdentifier: "SignUpViewControllerID") as! SignUpViewController
+//                self.present(nextVC, animated: true, completion: nil)
+				
             })
         }
     }
@@ -153,7 +154,9 @@ class LoginVC: UIViewController {
 
 					
                     self.present(nextVC,animated:true,completion:nil)
-                }
+				} else {
+					print(error.debugDescription)
+				}
                 
             })
         }
@@ -213,7 +216,7 @@ extension LoginVC: GIDSignInDelegate {
 				self.uid = uid
 				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
 				refUser.observeSingleEvent(of: .value) { (snapshot) in
-					if let _ = snapshot.value as? String {
+					if let _ = snapshot.value {
 					} else {
 						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
 						refUser.child(DEF_USER_MAIL).setValue(authResult?.user.email ?? nil)

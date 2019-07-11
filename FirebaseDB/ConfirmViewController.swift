@@ -29,6 +29,7 @@ class ConfirmViewController: UIViewController {
     @IBOutlet weak var logOut: UIButton!
     
     // LogInViewController 有詳細說明 uid ，這邊就不再重複了
+	var m_user: ST_USER_INFO!
     var m_userId = ""
     
     override func viewDidLoad() {
@@ -67,7 +68,6 @@ class ConfirmViewController: UIViewController {
 			if let url = snapshot.value as? String {
             	let maxSize : Int64 = 2 * 1024 * 1024 //大小：2MB，可視情況改變
             	//從Storage抓這個圖片
-//				Storage.storage().reference(forURL: url).getData(maxSize: maxSize) { (data, error) in
 				Storage.storage().reference().child(url).getData(maxSize: maxSize) { (data, error) in
                 	if error != nil {
                     	print(error.debugDescription)
@@ -89,27 +89,12 @@ class ConfirmViewController: UIViewController {
             	}
 			}
         }
-        
-        
-        // 接下來也是很重要的一步，從Firebase拿取資料，並顯示為label(name, gender, email, phone)
-
-        // 前面有個var ref，把這一串路徑除存在變數中
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
 		
-        // .observe 顧名思義就是「察看」的意思，也就是說ref.observe(.value)->查看「這串導引到特定位置的路徑」的value
-        // snapshot只是一個代稱(習慣為snapshot)，通常搭配.value，是指「這串路徑下的值」
-        refUser.child(DEF_USER_NAME).observe(.value) { (snapshot) in
-			if let name = snapshot.value as? String { // 假設 name 是這串路徑下的值，
-            	// as! String 是因為下一行程式碼self.name_check.text為label，因此必須為String
-            	self.name_check.text = name // self.name_check.text這個label為上一行程式碼所假設的 name
-			}
-        }
-        
-        
-        // 下面就都一樣的意思，只是換成Gender、Email、Phone
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
-        refUser.child(DEF_USER_SEX).observe(.value) { (snapshot) in
-			if let gender = snapshot.value as? Int {
+		refUser.observe(.value) { (snapshot) in
+			if let dict = snapshot.value as? [String : Any] {
+				self.name_check.text = dict[DEF_USER_NAME] as? String
+				
+				let gender = dict[DEF_USER_SEX] as? Int
 				switch gender {
 				case 1:
 					self.gender_check.text = "man"
@@ -118,28 +103,13 @@ class ConfirmViewController: UIViewController {
 				default:
 					self.gender_check.text = "?"
 				}
+				
+				self.email_check.text = dict[DEF_USER_MAIL] as? String
+				
+				self.phone_check.text = dict[DEF_USER_PHONE] as? String
+			
 			}
-        }
-        
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email")
-        refUser.child(DEF_USER_MAIL).observe(.value) { (snapshot) in
-			if let email = snapshot.value as? String {
-            	self.email_check.text = email
-			}
-        }
-        
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone")
-        refUser.child(DEF_USER_PHONE).observe(.value) { (snapshot) in
-			if let phone = snapshot.value as? String {
-            	self.phone_check.text = phone
-            	self.phone_check.isHidden = false
-			}
-        }
-        
-        logOut.isHidden = false// 登出Button顯示
-        changePersonalInfo.isHidden = false// 修改個人資料Button顯示
-        
-
+		}
     }
     
     override func didReceiveMemoryWarning() {

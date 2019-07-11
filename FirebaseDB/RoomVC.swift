@@ -32,12 +32,27 @@ class RoomVC: UIViewController {
 		self.m_tableView.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor, constant: 20).isActive = true
 		self.m_tableView.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 		self.m_tableView.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
-		self.m_tableView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 0.5).isActive = true
+		self.m_tableView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 0.65).isActive = true
 		
 		self.m_tableView.dataSource = self
 		self.m_tableView.delegate = self
 		
-		print(randomIndex(10))
+//		print(randomIndex(10))
+	}
+	
+	func addMember(_ name: String) {
+		let uid = UUID().uuidString
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
+		let values: [String : Any] =
+			[
+				DEF_ROOM_MEMBERS_NICKNAME : name,
+				DEF_ROOM_MEMBERS_INDEX : 0,
+				DEF_ROOM_MEMBERS_CANDIDATE : false,
+				DEF_ROOM_MEMBERS_TEAM : 0,
+				DEF_ROOM_MEMBERS_VOTED : false,
+				DEF_ROOM_MEMBERS_POLL: 0
+		]
+		refRoom.child(DEF_ROOM_MEMBERS).updateChildValues([uid : values])
 	}
 	
 	func joinRoom(_ name: String) {
@@ -51,7 +66,7 @@ class RoomVC: UIViewController {
 				DEF_ROOM_MEMBERS_VOTED : false,
 				DEF_ROOM_MEMBERS_POLL : 0,
 			]
-		refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(m_userId)":values])
+		refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(m_userId)" : values])
 	}
 	
 	
@@ -195,11 +210,44 @@ class RoomVC: UIViewController {
 		view.addSubview(btn)
 		btn.addTarget(self, action: #selector(randamGroup), for: .touchUpInside)
 		
+		let btn2 = UIButton(frame: CGRect(x: 130, y: 30, width: 50, height: 50))
+		btn2.setTitle("Add", for: .normal)
+		btn2.setTitleColor(.red, for: .normal)
+		view.addSubview(btn2)
+		btn2.addTarget(self, action: #selector(showAlert), for: .touchUpInside)
+		
 		getRoomInfo()
         // Do any additional setup after loading the view.
     }
     
+	@objc func showAlert() {
+		let alert = UIAlertController(title: "New Member",
+								message: "Enter Name",
+								preferredStyle: .alert)
+		alert.addTextField {
+			(textField: UITextField!) -> Void in
+			textField.placeholder = "Name"
+		}
+		
+		let cancelAction = UIAlertAction(
+			title: "Cancel",
+			style: .cancel)
+		alert.addAction(cancelAction)
+		
+		let okAction = UIAlertAction(
+			title: "OK",
+			style: .default) {
+				(action: UIAlertAction!) -> Void in
+				if let name = alert.textFields?.first?.text {
+					self.addMember(name)
+				}
+		}
+		alert.addAction(okAction)
+		
+		self.present(alert, animated: true)
+				
 
+	}
     /*
     // MARK: - Navigation
 
