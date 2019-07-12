@@ -25,6 +25,7 @@ let DEF_ROOM_MEMBERS = "Members"
 let DEF_ROOM_MESSAGE = "Message"
 let DEF_ROOM_TITLE = "Title"
 let DEF_ROOM_GROUP = "Group"
+let DEF_ROOM_RAND = "Rand"
 
 let DEF_ROOM_MEMBERS_CANDIDATE = "Candidate"
 let DEF_ROOM_MEMBERS_TEAM = "Team"

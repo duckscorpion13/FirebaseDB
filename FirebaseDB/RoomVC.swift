@@ -18,6 +18,8 @@ enum EN_TABLE_MODE: Int {
 
 class RoomVC: UIViewController {
 
+	var m_stackBtns: UIStackView? = nil
+	
 	var m_tableType: EN_TABLE_MODE = .TABLE_BY_DEFAULT
 	
 //	var m_isSort = false
@@ -32,9 +34,6 @@ class RoomVC: UIViewController {
 	var m_sortMembers = [ST_MEMBER_INFO]()
 	var m_groupMembers = [[ST_MEMBER_INFO]]()
 	var m_imgMap = [String : UIImage]()
-	
-	var m_indexArray = [Int]()
-	var m_groupArray = [Int]()
 	
 	fileprivate func setupTableView() {
 		
@@ -51,6 +50,15 @@ class RoomVC: UIViewController {
 		self.m_tableView.delegate = self
 		
 //		print(randomIndex(10))
+	}
+	
+	func updateRand(_ total: Int) {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+		refRoom.child(DEF_ROOM_RAND).setValue(self.randomIndex(total))
 	}
 	
 	func addMember(_ name: String) {
@@ -113,6 +121,7 @@ class RoomVC: UIViewController {
 		}
 		
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+		
 		refRoom.observe( .value) { (snapshot) in
 			if let dict = snapshot.value as? [String : Any] {
 				self.m_room?.groups = dict[DEF_ROOM_GROUP] as? Int
@@ -146,6 +155,9 @@ class RoomVC: UIViewController {
 												  poll: dict[DEF_ROOM_MEMBERS_POLL] as? Int)
 						self.m_members.append(info)
 					}
+				}
+				if(self.m_isHost) {
+					
 				}
 //				print(self.m_members)
 				DispatchQueue.main.async {
@@ -276,16 +288,12 @@ class RoomVC: UIViewController {
 		return randomArray
 	}
 	
-	override func viewDidLoad() {
-        super.viewDidLoad()
-		
-		setupTableView()
-		
-		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
-		btn.setTitle("Group", for: .normal)
-		btn.setTitleColor(.red, for: .normal)
-		view.addSubview(btn)
-		btn.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
+	fileprivate func setupBtns() {
+		let btn1 = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
+		btn1.setTitle("Group", for: .normal)
+		btn1.setTitleColor(.red, for: .normal)
+		view.addSubview(btn1)
+		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
 		
 		let btn2 = UIButton(frame: CGRect(x: 130, y: 30, width: 50, height: 50))
 		btn2.setTitle("Add", for: .normal)
@@ -304,6 +312,22 @@ class RoomVC: UIViewController {
 		btn4.setTitleColor(.red, for: .normal)
 		view.addSubview(btn4)
 		btn4.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
+		
+		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3, btn4])
+		if let stack = self.m_stackBtns {
+			stack.alignment = .fill
+			stack.distribution = .fillEqually
+			stack.frame = CGRect(x: 30, y: 30, width: 250, height: 50)
+			view.addSubview(stack)
+		}
+	}
+	
+	override func viewDidLoad() {
+        super.viewDidLoad()
+		
+		setupTableView()
+		
+		setupBtns()
 		
 		let segment = UISegmentedControl(frame: CGRect(x: 30, y: 130, width: 250, height: 50))
 		segment.insertSegment(withTitle: "normal", at: 0, animated: true)
