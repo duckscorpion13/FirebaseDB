@@ -84,7 +84,7 @@ class LoginVC: UIViewController {
     }
     
     // 這是前往ConfirmViewController的按鈕，但在到下一個ViewController之前，先「在Firebase做登入的動作」
-	fileprivate func createRoom(_ roomId: Int) {
+	fileprivate func createRoomAndMembers(_ roomId: Int) {
 		
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomId)")
 		refRoom.child(DEF_ROOM_HOST).setValue(self.uid)
@@ -93,17 +93,7 @@ class LoginVC: UIViewController {
 		refRoom.child(DEF_ROOM_MESSAGE).setValue("Hello World!")
 	
 		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
-			if snapshot.hasChildren() {
-				var tmpArray = [String]()
-				for member in snapshot.children {
-					if let item = member as? DataSnapshot,
-						let dict = item.value as? [String : Any],
-						let name = dict[DEF_ROOM_MEMBERS_NICKNAME] as? String {
-						tmpArray.append(name)
-					}
-				}
-				print(tmpArray)
-			} else {
+			if !snapshot.hasChildren() {
 				let names = ["Andy", "Bob", "Candy", "Dexter", "Edwin", "Frank", "Gina"]
 				for name in names {
 					let tmpId = names.index(of: name) ?? 0
@@ -118,18 +108,13 @@ class LoginVC: UIViewController {
 							DEF_ROOM_MEMBERS_POLL: 0
 						]
 					refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(tmpId)" : values])
-//					refRoomMember.child(DEF_ROOM_MEMBERS_NICKNAME).setValue(name)
-//					refRoomMember.child(DEF_ROOM_MEMBERS_INDEX).setValue(0)
-//					refRoomMember.child(DEF_ROOM_MEMBERS_CANDIDATE).setValue(false)
-//					refRoomMember.child(DEF_ROOM_MEMBERS_TEAM).setValue(0)
-//					refRoomMember.child(DEF_ROOM_MEMBERS_VOTE).setValue(0)
 				}
 			}
 		}
 	}
 	
 	@IBAction func LogIn_Button_Tapped(_ sender: Any) {
-		createRoom(11111)
+//		createRoomAndMembers(11111)
 
         // 一樣要先假設 Email & Password 要輸入某些字喔！
         if self.Email.text != "" || self.Password.text != ""{
@@ -216,16 +201,11 @@ extension LoginVC: GIDSignInDelegate {
 				self.uid = uid
 				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
 				refUser.observeSingleEvent(of: .value) { (snapshot) in
-					if let _ = snapshot.value {
-					} else {
+					if !snapshot.hasChildren() {
 						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
 						refUser.child(DEF_USER_MAIL).setValue(authResult?.user.email ?? nil)
-//						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name").setValue(authResult?.user.displayName ?? nil)
-//						Database.database().reference(withPath: "ID/\(self.uid)/Profile/Email").setValue(authResult?.user.email ?? nil)
 					}
 				}
-//				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo").setValue(authResult?.user.photoURL ?? nil)
-				
 			}
 			
 		

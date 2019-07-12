@@ -10,18 +10,31 @@ import UIKit
 import FirebaseDatabase
 import FirebaseStorage
 
+enum EN_TABLE_MODE: Int {
+	case TABLE_BY_DEFAULT = 0
+	case TABLE_BY_SORT
+	case TABLE_BY_GROUP
+}
+
 class RoomVC: UIViewController {
 
-	var m_isSort = false
-	var m_isGroup = false
-	var m_userId = ""
-	var m_roomId = 11111
-	var m_teamCount = 3
+	var m_tableType: EN_TABLE_MODE = .TABLE_BY_DEFAULT
+	
+//	var m_isSort = false
+//	var m_isGroup = false
+	var m_user: ST_USER_INFO? = nil
+	var m_room: ST_ROOM_INFO? = nil
+//	var m_roomNum = 0
+//	var m_teamCount = 3
+	var m_isHost = false
 	var m_tableView = UITableView(frame: .zero, style: .grouped)
 	var m_members = [ST_MEMBER_INFO]()
 	var m_sortMembers = [ST_MEMBER_INFO]()
 	var m_groupMembers = [[ST_MEMBER_INFO]]()
 	var m_imgMap = [String : UIImage]()
+	
+	var m_indexArray = [Int]()
+	var m_groupArray = [Int]()
 	
 	fileprivate func setupTableView() {
 		
@@ -41,8 +54,12 @@ class RoomVC: UIViewController {
 	}
 	
 	func addMember(_ name: String) {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
 		let uid = UUID().uuidString
-		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
 		let values: [String : Any] =
 			[
 				DEF_ROOM_MEMBERS_NICKNAME : name,
@@ -55,25 +72,65 @@ class RoomVC: UIViewController {
 		refRoom.child(DEF_ROOM_MEMBERS).updateChildValues([uid : values])
 	}
 	
-	func joinRoom(_ name: String) {
-		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
-		let values: NSMutableDictionary =
-			[
-				DEF_ROOM_MEMBERS_NICKNAME : name,
-				DEF_ROOM_MEMBERS_INDEX : 0,
-				DEF_ROOM_MEMBERS_CANDIDATE : false,
-				DEF_ROOM_MEMBERS_TEAM : 0,
-				DEF_ROOM_MEMBERS_VOTED : false,
-				DEF_ROOM_MEMBERS_POLL : 0,
-			]
-		refRoom.child(DEF_ROOM_MEMBERS).updateChildValues(["\(m_userId)" : values])
+	func joinRoom() {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
+		if let user = self.m_user,
+		let name = user.name,
+		let uid = user.uid {
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+			let values: NSMutableDictionary =
+				[
+					DEF_ROOM_MEMBERS_NICKNAME : name,
+					DEF_ROOM_MEMBERS_INDEX : 0,
+					DEF_ROOM_MEMBERS_CANDIDATE : false,
+					DEF_ROOM_MEMBERS_TEAM : 0,
+					DEF_ROOM_MEMBERS_VOTED : false,
+					DEF_ROOM_MEMBERS_POLL : 0,
+				]
+			refRoom.child(DEF_ROOM_MEMBERS).updateChildValues([uid : values])
+		}
 	}
 	
+	@objc func leaveRoom() {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
+		if let user = self.m_user,
+		let uid = user.uid {
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+			refRoom.child(DEF_ROOM_MEMBERS).child(uid).removeValue()
+			self.dismiss(animated: true)
+		}
+	}
 	
 	func getRoomInfo() {
-		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+		refRoom.observe( .value) { (snapshot) in
+			if let dict = snapshot.value as? [String : Any] {
+				self.m_room?.groups = dict[DEF_ROOM_GROUP] as? Int
+				self.m_room?.title = dict[DEF_ROOM_TITLE] as? String
+				self.m_room?.message = dict[DEF_ROOM_MESSAGE] as? String
+			}
+		}
+		
+		refRoom.child(DEF_ROOM_HOST).observeSingleEvent(of: .value) { (snapshot) in
+			if let host = snapshot.value as? String,
+			let uid = self.m_user?.uid {
+				self.m_isHost = (host == uid)
+			}
+		}
+		
 		refRoom.child(DEF_ROOM_MEMBERS).observe(.value) { (snapshot) in
 			if snapshot.hasChildren() {
+				self.m_room?.members = Int(snapshot.childrenCount)
 				self.m_members.removeAll()
 				for member in snapshot.children {
 					if let item = member as? DataSnapshot,
@@ -130,57 +187,77 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	@objc func randamGroup() {
-		self.m_isGroup = true
-		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
-		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
-			if snapshot.hasChildren() {
-				var i = 0
-				let randArray = self.randomIndex(Int(snapshot.childrenCount))
-//				print(randArray)
-				for member in snapshot.children {
-					if let item = member as? DataSnapshot {
-						let team = randArray[i] % self.m_teamCount
-						self.m_members[i].team = team
-						refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_TEAM : team])
-						i += 1
+	@objc func clickGroup() {
+		randamGroup(3)
+	}
+	
+	func randamGroup(_ max: Int) {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+
+		self.m_tableType = .TABLE_BY_GROUP
+		if(self.m_isHost) {
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+			refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
+				if snapshot.hasChildren() {
+					var i = 0
+					let randArray = self.randomIndex(Int(snapshot.childrenCount))
+	//				print(randArray)
+					for member in snapshot.children {
+						if let item = member as? DataSnapshot {
+							let team = randArray[i] % max
+							self.m_members[i].team = team
+							refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_TEAM : team])
+							i += 1
+						}
 					}
-				}
-				
-				self.m_groupMembers.removeAll()
-				for i in 0 ..< self.m_teamCount {
 					
-					let array = self.m_members.filter { member in
-						return member.team == i
+					self.m_groupMembers.removeAll()
+					for i in 0 ..< max {
+						
+						let array = self.m_members.filter { member in
+							return member.team == i
+						}
+	//					print(array)
+						self.m_groupMembers.append(array)
 					}
-//					print(array)
-					self.m_groupMembers.append(array)
 				}
 			}
 		}
 	}
-	@objc func randamSort() {
-		self.m_isSort = true
-		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(m_roomId)")
-		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
-			if snapshot.hasChildren() {
-				var i = 0
-				let randArray = self.randomIndex(Int(snapshot.childrenCount))
-//				print(randArray)
-				for member in snapshot.children {
-					if let item = member as? DataSnapshot {
-						let order = randArray[i]
-						self.m_members[i].index = order
-						refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_INDEX : order])
-						i += 1
+	@objc func clickSort() {
+		randamSort()
+	}
+	
+	func randamSort() {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
+		self.m_tableType = .TABLE_BY_SORT
+		if(self.m_isHost) {
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+			refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
+				if snapshot.hasChildren() {
+					var i = 0
+					let randArray = self.randomIndex(Int(snapshot.childrenCount))
+	//				print(randArray)
+					for member in snapshot.children {
+						if let item = member as? DataSnapshot {
+							let order = randArray[i]
+							self.m_members[i].index = order
+							refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_INDEX : order])
+							i += 1
+						}
 					}
-				}
-				
-				self.m_sortMembers.removeAll()
-				for i in 0 ..< randArray.count {
-					if let index = randArray.index(of: i) {
-						let member = self.m_members[index]
-						self.m_sortMembers.append(member)
+					
+					self.m_sortMembers.removeAll()
+					for i in 0 ..< randArray.count {
+						if let index = randArray.index(of: i) {
+							let member = self.m_members[index]
+							self.m_sortMembers.append(member)
+						}
 					}
 				}
 			}
@@ -205,21 +282,48 @@ class RoomVC: UIViewController {
 		setupTableView()
 		
 		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
-		btn.setTitle("Sort", for: .normal)
+		btn.setTitle("Group", for: .normal)
 		btn.setTitleColor(.red, for: .normal)
 		view.addSubview(btn)
-		btn.addTarget(self, action: #selector(randamGroup), for: .touchUpInside)
+		btn.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
 		
 		let btn2 = UIButton(frame: CGRect(x: 130, y: 30, width: 50, height: 50))
 		btn2.setTitle("Add", for: .normal)
-		btn2.setTitleColor(.red, for: .normal)
+		btn2.setTitleColor(.blue, for: .normal)
 		view.addSubview(btn2)
 		btn2.addTarget(self, action: #selector(showAlert), for: .touchUpInside)
+		
+		let btn3 = UIButton(frame: CGRect(x: 230, y: 30, width: 50, height: 50))
+		btn3.setTitle("Leave", for: .normal)
+		btn3.setTitleColor(.green, for: .normal)
+		view.addSubview(btn3)
+		btn3.addTarget(self, action: #selector(leaveRoom), for: .touchUpInside)
+		
+		let btn4 = UIButton(frame: CGRect(x: 330, y: 30, width: 50, height: 50))
+		btn4.setTitle("Sort", for: .normal)
+		btn4.setTitleColor(.red, for: .normal)
+		view.addSubview(btn4)
+		btn4.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
+		
+		let segment = UISegmentedControl(frame: CGRect(x: 30, y: 130, width: 250, height: 50))
+		segment.insertSegment(withTitle: "normal", at: 0, animated: true)
+		segment.insertSegment(withTitle: "sort", at: 1, animated: true)
+		segment.insertSegment(withTitle: "group", at: 2, animated: true)
+		segment.selectedSegmentIndex = 0
+		view.addSubview(segment)
+		segment.addTarget(self, action: #selector(clickSegment), for: .valueChanged)
 		
 		getRoomInfo()
         // Do any additional setup after loading the view.
     }
-    
+	@objc func clickSegment(_ sender: Any) {
+		if let segment = sender as? UISegmentedControl {
+			self.m_tableType = EN_TABLE_MODE(rawValue: segment.selectedSegmentIndex) ?? .TABLE_BY_DEFAULT
+			DispatchQueue.main.async {
+				self.m_tableView.reloadData()
+			}
+		}
+	}
 	@objc func showAlert() {
 		let alert = UIAlertController(title: "New Member",
 								message: "Enter Name",
@@ -262,46 +366,44 @@ class RoomVC: UIViewController {
 
 extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if(m_isSort) {
+		switch self.m_tableType {
+		case .TABLE_BY_GROUP:
+			return self.m_groupMembers[section].count
+		case .TABLE_BY_SORT:
 			return self.m_sortMembers.count
-		} else {
-			return m_isGroup ? self.m_groupMembers[section].count : self.m_members.count
+		default:
+			return self.m_members.count
 		}
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MyTableViewCell
-		
-		if(m_isGroup) {
-			let member = self.m_groupMembers[indexPath.section][indexPath.row]
-			cell.nameLabel.text = member.nickname
-			cell.detailLabel.text = "\(member.poll ?? 0)"
-			let uid = member.uid ?? ""
-			if let _ = self.m_imgMap.index(forKey: uid) {
-				cell.imgView.image = self.m_imgMap[uid]
-			} else {
-				cell.imgView.image = UIImage(named: "smile")
-			}
+		var member: ST_MEMBER_INFO!
+		switch self.m_tableType {
+		case .TABLE_BY_GROUP:
+			member = self.m_groupMembers[indexPath.section][indexPath.row]
+		case .TABLE_BY_SORT:
+			member = self.m_sortMembers[indexPath.row]
+		default:
+			member =  self.m_members[indexPath.row]
+		}
+		cell.nameLabel.text = member.nickname
+		cell.detailLabel.text = "\(member.poll ?? 0)"
+		let uid = member.uid ?? ""
+		if let _ = self.m_imgMap.index(forKey: uid) {
+			cell.imgView.image = self.m_imgMap[uid]
 		} else {
-			let member = m_isSort ? self.m_sortMembers[indexPath.row] : self.m_members[indexPath.row]
-			cell.nameLabel.text = member.nickname
-			cell.detailLabel.text = "\(member.poll ?? 0)"
-			let uid = member.uid ?? ""
-			if let _ = self.m_imgMap.index(forKey: uid) {
-				cell.imgView.image = self.m_imgMap[uid]
-			} else {
-				cell.imgView.image = UIImage(named: "smile")
-			}
+			cell.imgView.image = UIImage(named: "smile")
 		}
 		return cell
 	}
 	
-	func numberOfSections(in tableView: UITableView) -> Int {
-		return m_isGroup ? self.m_groupMembers.count : 1
+	func numberOfSections(in tableView: UITableView) -> Int {	
+		return self.m_tableType == .TABLE_BY_GROUP ? self.m_groupMembers.count : 1
 	}
 	
 	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		return  m_isGroup ? "TEAM \(section + 1)" : nil
+		return  self.m_tableType == .TABLE_BY_GROUP ? "TEAM \(section + 1)" : nil
 	}
 
 }

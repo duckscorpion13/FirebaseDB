@@ -29,7 +29,7 @@ class ConfirmViewController: UIViewController {
     @IBOutlet weak var logOut: UIButton!
     
     // LogInViewController 有詳細說明 uid ，這邊就不再重複了
-	var m_user: ST_USER_INFO!
+	var m_user: ST_USER_INFO? = nil
     var m_userId = ""
     
     override func viewDidLoad() {
@@ -42,18 +42,50 @@ class ConfirmViewController: UIViewController {
         }
 
 		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
-		btn.setTitle("Room", for: .normal)
+		btn.setTitle("Enter", for: .normal)
 		btn.setTitleColor(.red, for: .normal)
 		view.addSubview(btn)
-		btn.addTarget(self, action: #selector(enterRoom), for: .touchUpInside)
+		btn.addTarget(self, action: #selector(clickEnter), for: .touchUpInside)
+		
+		let btn2 = UIButton(frame: CGRect(x: 130, y: 30, width: 50, height: 50))
+		btn2.setTitle("Create", for: .normal)
+		btn2.setTitleColor(.blue, for: .normal)
+		view.addSubview(btn2)
+		btn2.addTarget(self, action: #selector(clickCreate), for: .touchUpInside)
     }
 	
-	@objc func enterRoom() {
-		let vc = RoomVC()
-		vc.view.backgroundColor = .lightGray
-		self.present(vc, animated: true)
+	@objc func clickEnter() {
+		enterRoom(11111)
 	}
-    
+	
+	func enterRoom(_ number: Int) {
+		if let user = self.m_user {
+			let vc = RoomVC()
+			vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil)
+			vc.m_user = user
+			vc.joinRoom()
+			vc.view.backgroundColor = .lightGray
+			self.present(vc, animated: true)
+		}
+	}
+	
+	@objc func clickCreate() {
+		createRoom(11111)
+	}
+	
+	func createRoom(_ number: Int) {
+		if let user = self.m_user,
+		let uid = user.uid {
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(number)")
+			refRoom.child(DEF_ROOM_HOST).setValue(uid)
+			refRoom.child(DEF_ROOM_GROUP).setValue(1)
+			refRoom.child(DEF_ROOM_TITLE).setValue("Welcome")
+			refRoom.child(DEF_ROOM_MESSAGE).setValue("Hello World!")
+			refRoom.child(DEF_ROOM_HOST).setValue(uid)
+			enterRoom(number)
+		}
+	}
+	
 	func viewDetail() {
         
         // 指 ref 是 firebase中的特定路徑，導引到特定位置，像是「FIRDatabase.database().reference(withPath: "ID/\(self.uid)/Profile/Name")」
@@ -61,7 +93,6 @@ class ConfirmViewController: UIViewController {
         let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
         //從database抓取url，再從storage下載圖片
         //先在database找到存放url的路徑
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
         //observe 到 .value
         refUser.child(DEF_USER_PHOTO).observe(.value) { (snapshot) in
             //存放在這個 url
@@ -92,22 +123,29 @@ class ConfirmViewController: UIViewController {
 		
 		refUser.observe(.value) { (snapshot) in
 			if let dict = snapshot.value as? [String : Any] {
-				self.name_check.text = dict[DEF_USER_NAME] as? String
-				
-				let gender = dict[DEF_USER_SEX] as? Int
-				switch gender {
-				case 1:
-					self.gender_check.text = "man"
-				case 2:
-					self.gender_check.text = "woman"
-				default:
-					self.gender_check.text = "?"
+				self.m_user = ST_USER_INFO(uid: self.m_userId,
+										   mail: dict[DEF_USER_MAIL] as? String,
+										   phone: dict[DEF_USER_PHONE] as? String,
+										   name: dict[DEF_USER_NAME] as? String,
+										   photo: dict[DEF_USER_PHOTO] as? String,
+										   sex: dict[DEF_USER_SEX] as? Int)
+				if let user = self.m_user {
+					self.name_check.text = user.name
+					
+					let gender = user.sex
+					switch gender {
+					case 1:
+						self.gender_check.text = "man"
+					case 2:
+						self.gender_check.text = "woman"
+					default:
+						self.gender_check.text = "?"
+					}
+					
+					self.email_check.text = user.mail
+					
+					self.phone_check.text = user.phone
 				}
-				
-				self.email_check.text = dict[DEF_USER_MAIL] as? String
-				
-				self.phone_check.text = dict[DEF_USER_PHONE] as? String
-			
 			}
 		}
     }
@@ -137,12 +175,13 @@ class ConfirmViewController: UIViewController {
         // Database 的 Online-Status: "OFF"
         ref.setValue("OFF")
         // Authentication 也 SignOut
-		try!Auth.auth().signOut()
+		try! Auth.auth().signOut()
         
         // 前往LogIn頁面，回到初始頁面
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let nextVC = storyboard.instantiateViewController(withIdentifier: "LogInViewControllerID")as! LoginVC
-        self.present(nextVC,animated:true,completion:nil)
+		if let vc = storyboard.instantiateViewController(withIdentifier: "LogInViewControllerID") as? LoginVC {
+        	self.present(vc, animated:true)
+		}
         
         
 

@@ -35,17 +35,27 @@ let DEF_ROOM_MEMBERS_POLL = "Poll"
 
 //////////////////////////////////////////////////////////
 struct ST_USER_INFO: Codable {
-	var uid: String?
+	let uid: String?
 	
-	var mail: String?
+	let mail: String?
 	var phone: String?
 	var name: String?
 	var photo: String?
 	var sex: Int?
 }
 
+
+struct ST_ROOM_INFO: Codable {
+	let number: Int?
+	
+	var members: Int?
+	var groups: Int?
+	var title: String?
+	var message: String?
+}
+
 struct ST_MEMBER_INFO: Codable {
-	var uid: String?
+	let uid: String?
 	
 	var candidate: Bool?
 	var team: Int?

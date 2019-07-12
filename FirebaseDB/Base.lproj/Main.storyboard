@@ -142,15 +142,15 @@
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="41" translatesAutoresizingMaskIntoConstraints="NO" id="92f-1i-OOa">
                                 <rect key="frame" x="20" y="626" width="374" height="60"/>
                                 <subviews>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h7H-74-uKL">
-                                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="36"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h7H-74-uKL">
+                                        <rect key="frame" x="0.0" y="0.0" width="166.66666666666666" height="60"/>
                                         <state key="normal" title="Modify"/>
                                         <connections>
                                             <action selector="changePersonInfo:" destination="Abr-q5-pXu" eventType="touchUpInside" id="OrY-bI-zNq"/>
                                         </connections>
                                     </button>
-                                    <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y8t-fd-LSh">
-                                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="36"/>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Y8t-fd-LSh">
+                                        <rect key="frame" x="207.66666666666663" y="0.0" width="166.33333333333337" height="60"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                         <state key="normal" title="Logout">
                                             <color key="titleColor" red="0.0" green="0.50196081400000003" blue="0.50196081400000003" alpha="1" colorSpace="calibratedRGB"/>
