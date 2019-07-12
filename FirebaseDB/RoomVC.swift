@@ -35,6 +35,9 @@ class RoomVC: UIViewController {
 	var m_groupMembers = [[ST_MEMBER_INFO]]()
 	var m_imgMap = [String : UIImage]()
 	
+	var m_sortArray = [Int]()
+	var m_groupArray = [Int]()
+	
 	fileprivate func setupTableView() {
 		
 		self.m_tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "Cell")
@@ -141,6 +144,7 @@ class RoomVC: UIViewController {
 			if snapshot.hasChildren() {
 				self.m_room?.members = Int(snapshot.childrenCount)
 				self.m_members.removeAll()
+				var randArray = [Int]()
 				for member in snapshot.children {
 					if let item = member as? DataSnapshot,
 					let dict = item.value as? [String : Any],
@@ -153,12 +157,13 @@ class RoomVC: UIViewController {
 												  nickname: name,
 												  voted: dict[DEF_ROOM_MEMBERS_VOTED] as? Bool,
 												  poll: dict[DEF_ROOM_MEMBERS_POLL] as? Int)
+						randArray.append(dict[DEF_ROOM_MEMBERS_INDEX] as? Int ?? 0)
 						self.m_members.append(info)
 					}
 				}
-				if(self.m_isHost) {
-					
-				}
+				
+				self.buildGroupArray(Int(snapshot.childrenCount))
+				self.buildSortArray(randArray)
 //				print(self.m_members)
 				DispatchQueue.main.async {
 					self.m_tableView.reloadData()
@@ -200,7 +205,18 @@ class RoomVC: UIViewController {
 	}
 	
 	@objc func clickGroup() {
-		randamGroup(3)
+		randamGroup(5)
+	}
+	
+	fileprivate func buildGroupArray(_ max: Int) {
+		self.m_groupMembers.removeAll()
+		for i in 0 ..< max {
+			
+			let array = self.m_members.filter {
+				$0.team == i
+			}
+			self.m_groupMembers.append(array)
+		}
 	}
 	
 	func randamGroup(_ max: Int) {
@@ -211,35 +227,40 @@ class RoomVC: UIViewController {
 		self.m_tableType = .TABLE_BY_GROUP
 		if(self.m_isHost) {
 			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+			refRoom.updateChildValues([DEF_ROOM_GROUP : max])
 			refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
 				if snapshot.hasChildren() {
 					var i = 0
-					let randArray = self.randomIndex(Int(snapshot.childrenCount))
+					let groupArray = self.randomIndex(Int(snapshot.childrenCount)).map {
+						$0 % max
+					}
 	//				print(randArray)
 					for member in snapshot.children {
 						if let item = member as? DataSnapshot {
-							let team = randArray[i] % max
+							let team = groupArray[i]
 							self.m_members[i].team = team
 							refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_TEAM : team])
 							i += 1
 						}
 					}
-					
-					self.m_groupMembers.removeAll()
-					for i in 0 ..< max {
-						
-						let array = self.m_members.filter { member in
-							return member.team == i
-						}
-	//					print(array)
-						self.m_groupMembers.append(array)
-					}
+					self.m_groupArray = groupArray
+//					self.buildGroupArray(max)
 				}
 			}
 		}
 	}
 	@objc func clickSort() {
 		randamSort()
+	}
+	
+	fileprivate func buildSortArray(_ randArray: [Int]) {
+		self.m_sortMembers.removeAll()
+		for i in 0 ..< randArray.count {
+			if let index = randArray.index(of: i) {
+				let member = self.m_members[index]
+				self.m_sortMembers.append(member)
+			}
+		}
 	}
 	
 	func randamSort() {
@@ -264,13 +285,7 @@ class RoomVC: UIViewController {
 						}
 					}
 					
-					self.m_sortMembers.removeAll()
-					for i in 0 ..< randArray.count {
-						if let index = randArray.index(of: i) {
-							let member = self.m_members[index]
-							self.m_sortMembers.append(member)
-						}
-					}
+//					self.buildSortArray(randArray)
 				}
 			}
 		}
@@ -402,18 +417,24 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MyTableViewCell
-		var member: ST_MEMBER_INFO!
+		var member: ST_MEMBER_INFO? = nil
 		switch self.m_tableType {
 		case .TABLE_BY_GROUP:
-			member = self.m_groupMembers[indexPath.section][indexPath.row]
+			if(indexPath.row < self.m_groupMembers[indexPath.section].count) {
+				member = self.m_groupMembers[indexPath.section][indexPath.row]
+			}
 		case .TABLE_BY_SORT:
-			member = self.m_sortMembers[indexPath.row]
+			if(indexPath.row < self.m_sortMembers.count) {
+				member = self.m_sortMembers[indexPath.row]
+			}
 		default:
-			member =  self.m_members[indexPath.row]
+			if(indexPath.row < self.m_members.count) {
+				member = self.m_members[indexPath.row]
+			}
 		}
-		cell.nameLabel.text = member.nickname
-		cell.detailLabel.text = "\(member.poll ?? 0)"
-		let uid = member.uid ?? ""
+		cell.nameLabel.text = member?.nickname
+		cell.detailLabel.text = "\(member?.poll ?? 0)"
+		let uid = member?.uid ?? ""
 		if let _ = self.m_imgMap.index(forKey: uid) {
 			cell.imgView.image = self.m_imgMap[uid]
 		} else {
@@ -422,8 +443,9 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 		return cell
 	}
 	
-	func numberOfSections(in tableView: UITableView) -> Int {	
-		return self.m_tableType == .TABLE_BY_GROUP ? self.m_groupMembers.count : 1
+	func numberOfSections(in tableView: UITableView) -> Int {
+		let groups = self.m_room?.groups ?? 1
+		return self.m_tableType == .TABLE_BY_GROUP ? groups : 1
 	}
 	
 	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
