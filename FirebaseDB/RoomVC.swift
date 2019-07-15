@@ -22,13 +22,13 @@ class RoomVC: UIViewController {
 	
 	var m_tableType: EN_TABLE_MODE = .TABLE_BY_DEFAULT
 	
-//	var m_isSort = false
-//	var m_isGroup = false
 	var m_user: ST_USER_INFO? = nil
 	var m_room: ST_ROOM_INFO? = nil
-//	var m_roomNum = 0
-//	var m_teamCount = 3
+
 	var m_isHost = false
+	
+	var m_isVoted = false
+	
 	var m_tableView = UITableView(frame: .zero, style: .grouped)
 	var m_members = [ST_MEMBER_INFO]()
 	var m_sortMembers = [ST_MEMBER_INFO]()
@@ -110,11 +110,41 @@ class RoomVC: UIViewController {
 			return
 		}
 		
-		if let user = self.m_user,
-		let uid = user.uid {
-			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
-			refRoom.child(DEF_ROOM_MEMBERS).child(uid).removeValue()
+		if(self.m_isHost) {
+			let alert = UIAlertController.selectAlert(title: "Close", msg: "delete room, Sure?") {
+				isDelete in
+				if(isDelete) {
+					let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+					refRoom.removeValue() {_,_ in
+						self.dismiss(animated: true)
+					}
+				} else {
+					self.dismiss(animated: true)
+				}
+			}
+			self.present(alert, animated: true)
+		} else {
 			self.dismiss(animated: true)
+		}
+		
+	}
+	
+	func getMemberInfo(_ uid: String) -> ST_MEMBER_INFO? {
+		for member in self.m_members {
+			if(uid == member.uid) {
+				return member
+			}
+		}
+		return nil
+	}
+	
+	func expel(_ uid: String, success: @escaping () -> Void = {} ) {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+		refRoom.child(DEF_ROOM_MEMBERS).child(uid).removeValue() { _,_ in
+			success()
 		}
 	}
 	
@@ -133,10 +163,10 @@ class RoomVC: UIViewController {
 			}
 		}
 		
-		refRoom.child(DEF_ROOM_HOST).observeSingleEvent(of: .value) { (snapshot) in
+		refRoom.child(DEF_ROOM_HOST).observe( .value) { (snapshot) in
 			if let host = snapshot.value as? String,
-			let uid = self.m_user?.uid {
-				self.m_isHost = (host == uid)
+			let myId = self.m_user?.uid {
+				self.m_isHost = (host == myId)
 			}
 		}
 		
@@ -159,6 +189,11 @@ class RoomVC: UIViewController {
 												  poll: dict[DEF_ROOM_MEMBERS_POLL] as? Int)
 						randArray.append(dict[DEF_ROOM_MEMBERS_INDEX] as? Int ?? 0)
 						self.m_members.append(info)
+						
+						if let myId = self.m_user?.uid,
+						info.uid == myId {
+							self.m_isVoted = dict[DEF_ROOM_MEMBERS_VOTED] as? Bool ?? true
+						}
 					}
 				}
 				
@@ -205,7 +240,13 @@ class RoomVC: UIViewController {
 	}
 	
 	@objc func clickGroup() {
-		randamGroup(5)
+		let alert = UIAlertController.textAlert(title: "Group", msg: "count of team") { count in
+			if let _count = Int(count) {
+				self.randomGroup(_count)
+			}
+		}
+		self.present(alert, animated: true)
+		
 	}
 	
 	fileprivate func buildGroupArray(_ max: Int) {
@@ -219,7 +260,7 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	func randamGroup(_ max: Int) {
+	func randomGroup(_ max: Int) {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -250,7 +291,7 @@ class RoomVC: UIViewController {
 		}
 	}
 	@objc func clickSort() {
-		randamSort()
+		randomSort()
 	}
 	
 	fileprivate func buildSortArray(_ randArray: [Int]) {
@@ -263,7 +304,25 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	func randamSort() {
+	func vote(_ uid: String) {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		
+		let refMembers = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)").child(DEF_ROOM_MEMBERS)
+		refMembers.child(uid).child(DEF_ROOM_MEMBERS_POLL).observeSingleEvent(of: .value) { (snapshot) in
+			
+			guard let myId = self.m_user?.uid else {
+				return
+			}
+			if let poll = snapshot.value as? Int {
+				refMembers.child(uid).updateChildValues([DEF_ROOM_MEMBERS_POLL : poll+1])
+				refMembers.child(myId).updateChildValues([DEF_ROOM_MEMBERS_VOTED : true])
+			}
+		}
+	}
+	
+	func randomSort() {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -283,8 +342,7 @@ class RoomVC: UIViewController {
 							refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_INDEX : order])
 							i += 1
 						}
-					}
-					
+					}					
 //					self.buildSortArray(randArray)
 				}
 			}
@@ -314,7 +372,7 @@ class RoomVC: UIViewController {
 		btn2.setTitle("Add", for: .normal)
 		btn2.setTitleColor(.blue, for: .normal)
 		view.addSubview(btn2)
-		btn2.addTarget(self, action: #selector(showAlert), for: .touchUpInside)
+		btn2.addTarget(self, action: #selector(clickAdd), for: .touchUpInside)
 		
 		let btn3 = UIButton(frame: CGRect(x: 230, y: 30, width: 50, height: 50))
 		btn3.setTitle("Leave", for: .normal)
@@ -363,34 +421,15 @@ class RoomVC: UIViewController {
 			}
 		}
 	}
-	@objc func showAlert() {
-		let alert = UIAlertController(title: "New Member",
-								message: "Enter Name",
-								preferredStyle: .alert)
-		alert.addTextField {
-			(textField: UITextField!) -> Void in
-			textField.placeholder = "Name"
+	
+	@objc func clickAdd() {
+		let alert = UIAlertController.textAlert(title: "New Member", msg: "Nickname") { name in
+			self.addMember(name)
 		}
-		
-		let cancelAction = UIAlertAction(
-			title: "Cancel",
-			style: .cancel)
-		alert.addAction(cancelAction)
-		
-		let okAction = UIAlertAction(
-			title: "OK",
-			style: .default) {
-				(action: UIAlertAction!) -> Void in
-				if let name = alert.textFields?.first?.text {
-					self.addMember(name)
-				}
-		}
-		alert.addAction(okAction)
-		
 		self.present(alert, animated: true)
-				
-
 	}
+	
+	
     /*
     // MARK: - Navigation
 
@@ -417,6 +456,7 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MyTableViewCell
+		cell.delegate = self
 		var member: ST_MEMBER_INFO? = nil
 		switch self.m_tableType {
 		case .TABLE_BY_GROUP:
@@ -434,7 +474,11 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 		}
 		cell.nameLabel.text = member?.nickname
 		cell.detailLabel.text = "\(member?.poll ?? 0)"
+		
+		cell.voteBtn.isEnabled = !self.m_isVoted
+		
 		let uid = member?.uid ?? ""
+		cell.uid = uid
 		if let _ = self.m_imgMap.index(forKey: uid) {
 			cell.imgView.image = self.m_imgMap[uid]
 		} else {
@@ -451,5 +495,49 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		return  self.m_tableType == .TABLE_BY_GROUP ? "TEAM \(section + 1)" : nil
 	}
+	
+	func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+		return self.m_isHost
+	}
+	func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath)
+	{
+		if editingStyle == .delete {
+			var member: ST_MEMBER_INFO? = nil
+			switch self.m_tableType {
+			case .TABLE_BY_GROUP:
+				if(indexPath.row < self.m_groupMembers[indexPath.section].count) {
+					member = self.m_groupMembers[indexPath.section][indexPath.row]
+				}
+			case .TABLE_BY_SORT:
+				if(indexPath.row < self.m_sortMembers.count) {
+					member = self.m_sortMembers[indexPath.row]
+				}
+			default:
+				if(indexPath.row < self.m_members.count) {
+					member = self.m_members[indexPath.row]
+				}
+			}
+			if let uid = member?.uid {
+				let name = self.getMemberInfo(uid)?.nickname ?? ""
+				let alert = UIAlertController.checkAlert(title: "Expel", msg: "ban \(name), sure?") {
+					self.expel(uid)
+				}
+				self.present(alert, animated: true)
+			}
+				
+		}
+	}
+}
 
+extension RoomVC: MyTableViewCellDelegate {
+	func handleVote(_ uid: String) {
+//		print(uid)\
+		if(!m_isVoted) {
+			let name = self.getMemberInfo(uid)?.nickname ?? ""
+			let alert = UIAlertController.checkAlert(title: "Vote", msg: "vote \(name) sure?") {
+				self.vote(uid)
+			}
+			self.present(alert, animated: true)
+		}
+	}
 }

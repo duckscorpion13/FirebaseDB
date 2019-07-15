@@ -30,15 +30,13 @@ class ConfirmViewController: UIViewController {
     
     // LogInViewController 有詳細說明 uid ，這邊就不再重複了
 	var m_user: ST_USER_INFO? = nil
-    var m_userId = ""
-    
+	
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // 這裡即是 uid 所解釋的，將Firebase使用者uid儲存愛變數uid裡面，在viewDidLoad中取用一次，便可在這個viewController隨意使用
 		if let user = Auth.auth().currentUser {
-            m_userId = user.uid
-			viewDetail()
+			viewDetail(user.uid)
         }
 
 		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
@@ -59,14 +57,26 @@ class ConfirmViewController: UIViewController {
 	}
 	
 	func enterRoom(_ number: Int) {
-		if let user = self.m_user {
-			let vc = RoomVC()
-			vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil)
-			vc.m_user = user
-			vc.joinRoom()
-			vc.view.backgroundColor = .lightGray
-			self.present(vc, animated: true)
+		let refRooms = Database.database().reference(withPath: "\(DEF_ROOM)")
+		refRooms.observeSingleEvent(of: .value) { (snapshot) in
+			if snapshot.hasChildren() {
+				for item in snapshot.children {
+					if let room = item as? DataSnapshot {
+						if(room.key == String(number)) {
+							if let user = self.m_user {
+								let vc = RoomVC()
+								vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil)
+								vc.m_user = user
+								vc.joinRoom()
+								vc.view.backgroundColor = .lightGray
+								self.present(vc, animated: true)
+							}
+						}
+					}
+				}
+			}
 		}
+
 	}
 	
 	@objc func clickCreate() {
@@ -74,23 +84,23 @@ class ConfirmViewController: UIViewController {
 	}
 	
 	func createRoom(_ number: Int) {
-		if let user = self.m_user,
-		let uid = user.uid {
+
+		if let myId = self.m_user?.uid {
 			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(number)")
-			refRoom.child(DEF_ROOM_HOST).setValue(uid)
+			refRoom.child(DEF_ROOM_HOST).setValue(myId)
 			refRoom.child(DEF_ROOM_GROUP).setValue(1)
 			refRoom.child(DEF_ROOM_TITLE).setValue("Welcome")
 			refRoom.child(DEF_ROOM_MESSAGE).setValue("Hello World!")
-			refRoom.child(DEF_ROOM_HOST).setValue(uid)
+			refRoom.child(DEF_ROOM_HOST).setValue(myId)
 			enterRoom(number)
 		}
 	}
 	
-	func viewDetail() {
+	func viewDetail(_ uid: String) {
         
         // 指 ref 是 firebase中的特定路徑，導引到特定位置，像是「FIRDatabase.database().reference(withPath: "ID/\(self.uid)/Profile/Name")」
 //		var ref: DatabaseReference!
-        let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
+        let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(uid)")
         //從database抓取url，再從storage下載圖片
         //先在database找到存放url的路徑
         //observe 到 .value
@@ -123,7 +133,7 @@ class ConfirmViewController: UIViewController {
 		
 		refUser.observe(.value) { (snapshot) in
 			if let dict = snapshot.value as? [String : Any] {
-				self.m_user = ST_USER_INFO(uid: self.m_userId,
+				self.m_user = ST_USER_INFO(uid: snapshot.key,
 										   mail: dict[DEF_USER_MAIL] as? String,
 										   phone: dict[DEF_USER_PHONE] as? String,
 										   name: dict[DEF_USER_NAME] as? String,
@@ -170,8 +180,10 @@ class ConfirmViewController: UIViewController {
     
     // 前往 LogInViewController，先在Firebase中登出，並返回到最一開始的頁面
     @IBAction func logOut(_ sender: Any) {
-        
-		let ref = Database.database().reference(withPath: "Online-Status/\(m_userId)")
+		guard let myId = self.m_user?.uid else {
+			return
+		}
+		let ref = Database.database().reference(withPath: "Online-Status/\(myId)")
         // Database 的 Online-Status: "OFF"
         ref.setValue("OFF")
         // Authentication 也 SignOut

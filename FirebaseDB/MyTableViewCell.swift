@@ -7,7 +7,15 @@
 
 import UIKit
 
+@objc protocol MyTableViewCellDelegate {
+	@objc optional func handleVote(_ uid: String)
+}
+
 class MyTableViewCell: UITableViewCell {
+	var delegate: MyTableViewCellDelegate? = nil
+	
+	var uid = ""
+	
 	lazy var nameLabel: UILabel = {()-> UILabel in
 		
 		let lbl = UILabel()
@@ -31,6 +39,16 @@ class MyTableViewCell: UITableViewCell {
 		return imgv
 	}()
 	
+	lazy var voteBtn: UIButton = {()-> UIButton in
+		
+		let btn = UIButton()
+		btn.addTarget(self, action: #selector(voteClick), for: .touchUpInside)
+		btn.setTitle("Vote", for: .normal)
+		btn.setTitleColor(.blue, for: .normal)
+		btn.setTitleColor(.gray, for: .disabled)
+		return btn
+	}()
+	
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -52,28 +70,37 @@ class MyTableViewCell: UITableViewCell {
     }
     
     func setupUI(){
-        
-        let marginGuide = contentView.layoutMarginsGuide
+		
+		let marginGuide = contentView.layoutMarginsGuide
+		
+		contentView.addSubview(imgView)
+		imgView.translatesAutoresizingMaskIntoConstraints = false
+		imgView.leadingAnchor.constraint(equalTo: marginGuide.leadingAnchor).isActive = true
+		imgView.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
+		imgView.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
+		imgView.widthAnchor.constraint(equalToConstant: 60).isActive = true
+		imgView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+		
         // configure titleLabel
         contentView.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.leadingAnchor.constraint(equalTo: marginGuide.leadingAnchor).isActive = true
+        nameLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
         nameLabel.numberOfLines = 0
         
         contentView.addSubview(detailLabel)
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
-        detailLabel.leadingAnchor.constraint(equalTo: marginGuide.leadingAnchor).isActive = true
+        detailLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor).isActive = true
         detailLabel.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
         detailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
 	
-		contentView.addSubview(imgView)
-		imgView.translatesAutoresizingMaskIntoConstraints = false
-		imgView.trailingAnchor.constraint(equalTo: marginGuide.trailingAnchor).isActive = true
-		imgView.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
-		imgView.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
-		imgView.widthAnchor.constraint(equalToConstant: 50).isActive = true
-		imgView.heightAnchor.constraint(equalToConstant: 50).isActive = true
+		contentView.addSubview(voteBtn)
+		voteBtn.translatesAutoresizingMaskIntoConstraints = false
+		voteBtn.widthAnchor.constraint(equalToConstant: 50).isActive = true
+		voteBtn.centerYAnchor.constraint(equalTo: marginGuide.centerYAnchor).isActive = true
+		voteBtn.trailingAnchor.constraint(equalTo: marginGuide.trailingAnchor).isActive = true
     }
-
+	@objc func voteClick(_ sender: Any) {
+		self.delegate?.handleVote?(uid)
+	}
 }

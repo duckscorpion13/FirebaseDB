@@ -9,24 +9,6 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--RoomVC-->
-        <scene sceneID="7LG-Yj-yg8">
-            <objects>
-                <viewController id="qnU-Aj-Ak3" customClass="RoomVC" customModule="FirebaseDB" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="p0j-mE-Hck"/>
-                        <viewControllerLayoutGuide type="bottom" id="p5s-Fq-Flf"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Gja-sj-nl6">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="BoA-Bs-pso" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-905.79710144927549" y="32.608695652173914"/>
-        </scene>
         <!--LoginVC-->
         <scene sceneID="tne-QT-ifu">
             <objects>
