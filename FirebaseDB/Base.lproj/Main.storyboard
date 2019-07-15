@@ -109,10 +109,10 @@
             </objects>
             <point key="canvasLocation" x="96.799999999999997" y="45.42728635682159"/>
         </scene>
-        <!--Confirm View Controller-->
+        <!--ConfirmVC-->
         <scene sceneID="rGz-pS-QU9">
             <objects>
-                <viewController storyboardIdentifier="ConfirmViewControllerID" id="Abr-q5-pXu" customClass="ConfirmViewController" customModule="FirebaseDB" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ConfirmViewControllerID" id="Abr-q5-pXu" customClass="ConfirmVC" customModule="FirebaseDB" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="7VW-PQ-SK5"/>
                         <viewControllerLayoutGuide type="bottom" id="ofB-1A-J3i"/>
@@ -286,10 +286,10 @@
             </objects>
             <point key="canvasLocation" x="95.652173913043484" y="763.85869565217399"/>
         </scene>
-        <!--Change Data View Controller-->
+        <!--ChangeVC-->
         <scene sceneID="Nc7-wO-xwv">
             <objects>
-                <viewController storyboardIdentifier="ChangeDataViewControllerID" id="BvR-qf-C0U" customClass="ChangeDataViewController" customModule="FirebaseDB" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="ChangeDataViewControllerID" id="BvR-qf-C0U" customClass="ChangeVC" customModule="FirebaseDB" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="0Yl-n2-XVK"/>
                         <viewControllerLayoutGuide type="bottom" id="U3u-1k-wDN"/>
@@ -374,10 +374,10 @@
             </objects>
             <point key="canvasLocation" x="984.79999999999995" y="763.26836581709154"/>
         </scene>
-        <!--Sign Up View Controller-->
+        <!--Sign UpVC-->
         <scene sceneID="Vac-Nt-eSp">
             <objects>
-                <viewController storyboardIdentifier="SignUpViewControllerID" id="AK4-2l-vFO" customClass="SignUpViewController" customModule="FirebaseDB" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="SignUpViewControllerID" id="AK4-2l-vFO" customClass="SignUpVC" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ffH-2G-HWO"/>
                         <viewControllerLayoutGuide type="bottom" id="a4z-xS-Fik"/>

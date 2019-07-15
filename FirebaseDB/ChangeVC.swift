@@ -12,7 +12,7 @@ import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
 
-class ChangeDataViewController: UIViewController {
+class ChangeVC: UIViewController {
     
     
 	@IBOutlet weak var photo: UIButton!
@@ -165,7 +165,7 @@ class ChangeDataViewController: UIViewController {
     
 }
 
-extension ChangeDataViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ChangeVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
 	
 	
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {

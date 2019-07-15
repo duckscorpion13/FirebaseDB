@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		044FE5091E4480B700A7B5F5 /* ChangeDataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE5081E4480B700A7B5F5 /* ChangeDataViewController.swift */; };
-		044FE50B1E4480D700A7B5F5 /* ConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */; };
+		044FE5091E4480B700A7B5F5 /* ChangeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE5081E4480B700A7B5F5 /* ChangeVC.swift */; };
+		044FE50B1E4480D700A7B5F5 /* ConfirmVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE50A1E4480D700A7B5F5 /* ConfirmVC.swift */; };
 		048F31031E433ECB007B579D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31021E433ECB007B579D /* AppDelegate.swift */; };
-		048F31051E433ECB007B579D /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31041E433ECB007B579D /* SignUpViewController.swift */; };
+		048F31051E433ECB007B579D /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31041E433ECB007B579D /* SignUpVC.swift */; };
 		048F31081E433ECB007B579D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 048F31061E433ECB007B579D /* Main.storyboard */; };
 		048F310A1E433ECB007B579D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 048F31091E433ECB007B579D /* Assets.xcassets */; };
 		048F310D1E433ECB007B579D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 048F310B1E433ECB007B579D /* LaunchScreen.storyboard */; };
@@ -21,14 +21,15 @@
 		F977DD3822D5D61B007A9BF8 /* LogInVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F977DD3722D5D61B007A9BF8 /* LogInVC.swift */; };
 		F977DD3A22D6EC49007A9BF8 /* MyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */; };
 		F9ECC74622DC6F5E002CF008 /* UIAlertController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */; };
+		F9ECC74822DC8F85002CF008 /* CollectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74722DC8F85002CF008 /* CollectionVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		044FE5081E4480B700A7B5F5 /* ChangeDataViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeDataViewController.swift; sourceTree = "<group>"; };
-		044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmViewController.swift; sourceTree = "<group>"; };
+		044FE5081E4480B700A7B5F5 /* ChangeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeVC.swift; sourceTree = "<group>"; };
+		044FE50A1E4480D700A7B5F5 /* ConfirmVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmVC.swift; sourceTree = "<group>"; };
 		048F30FF1E433ECB007B579D /* FirebaseDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		048F31021E433ECB007B579D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		048F31041E433ECB007B579D /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		048F31041E433ECB007B579D /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
 		048F31071E433ECB007B579D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		048F31091E433ECB007B579D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		048F310C1E433ECB007B579D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -42,6 +43,7 @@
 		F977DD3722D5D61B007A9BF8 /* LogInVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInVC.swift; sourceTree = "<group>"; };
 		F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTableViewCell.swift; sourceTree = "<group>"; };
 		F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+.swift"; sourceTree = "<group>"; };
+		F9ECC74722DC8F85002CF008 /* CollectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,14 +79,15 @@
 		048F31011E433ECB007B579D /* FirebaseDB */ = {
 			isa = PBXGroup;
 			children = (
+				F9ECC74722DC8F85002CF008 /* CollectionVC.swift */,
 				048F31021E433ECB007B579D /* AppDelegate.swift */,
 				F977DD3722D5D61B007A9BF8 /* LogInVC.swift */,
 				F96D1FE822D49153006F9242 /* RoomVC.swift */,
 				F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */,
 				F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */,
-				048F31041E433ECB007B579D /* SignUpViewController.swift */,
-				044FE50A1E4480D700A7B5F5 /* ConfirmViewController.swift */,
-				044FE5081E4480B700A7B5F5 /* ChangeDataViewController.swift */,
+				048F31041E433ECB007B579D /* SignUpVC.swift */,
+				044FE50A1E4480D700A7B5F5 /* ConfirmVC.swift */,
+				044FE5081E4480B700A7B5F5 /* ChangeVC.swift */,
 				048F31061E433ECB007B579D /* Main.storyboard */,
 				F9339E9622D5912700C3A795 /* DatabaseModel.swift */,
 				048F31091E433ECB007B579D /* Assets.xcassets */,
@@ -254,12 +257,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				044FE50B1E4480D700A7B5F5 /* ConfirmViewController.swift in Sources */,
+				044FE50B1E4480D700A7B5F5 /* ConfirmVC.swift in Sources */,
 				F977DD3A22D6EC49007A9BF8 /* MyTableViewCell.swift in Sources */,
 				F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */,
 				F977DD3822D5D61B007A9BF8 /* LogInVC.swift in Sources */,
-				044FE5091E4480B700A7B5F5 /* ChangeDataViewController.swift in Sources */,
-				048F31051E433ECB007B579D /* SignUpViewController.swift in Sources */,
+				F9ECC74822DC8F85002CF008 /* CollectionVC.swift in Sources */,
+				044FE5091E4480B700A7B5F5 /* ChangeVC.swift in Sources */,
+				048F31051E433ECB007B579D /* SignUpVC.swift in Sources */,
 				048F31031E433ECB007B579D /* AppDelegate.swift in Sources */,
 				F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */,
 				F9ECC74622DC6F5E002CF008 /* UIAlertController+.swift in Sources */,

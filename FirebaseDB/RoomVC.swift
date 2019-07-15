@@ -10,6 +10,8 @@ import UIKit
 import FirebaseDatabase
 import FirebaseStorage
 
+private let reuseIdentifier = "TableCell"
+
 enum EN_TABLE_MODE: Int {
 	case TABLE_BY_DEFAULT = 0
 	case TABLE_BY_SORT
@@ -18,6 +20,7 @@ enum EN_TABLE_MODE: Int {
 
 class RoomVC: UIViewController {
 
+	
 	var m_stackBtns: UIStackView? = nil
 	
 	var m_tableType: EN_TABLE_MODE = .TABLE_BY_DEFAULT
@@ -28,7 +31,7 @@ class RoomVC: UIViewController {
 	var m_isHost = false
 	
 	var m_isVoted = false
-	
+	var m_segment = UISegmentedControl(frame: .zero)
 	var m_tableView = UITableView(frame: .zero, style: .grouped)
 	var m_members = [ST_MEMBER_INFO]()
 	var m_sortMembers = [ST_MEMBER_INFO]()
@@ -40,11 +43,11 @@ class RoomVC: UIViewController {
 	
 	fileprivate func setupTableView() {
 		
-		self.m_tableView.register(MyTableViewCell.self, forCellReuseIdentifier: "Cell")
+		self.m_tableView.register(MyTableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
 		
 		self.m_tableView.translatesAutoresizingMaskIntoConstraints = false
 		self.view.addSubview(self.m_tableView)
-		self.m_tableView.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor, constant: 20).isActive = true
+		self.m_tableView.topAnchor.constraint(equalTo: self.m_segment.bottomAnchor, constant: 10).isActive = true
 		self.m_tableView.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 		self.m_tableView.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
 		self.m_tableView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 0.65).isActive = true
@@ -88,20 +91,23 @@ class RoomVC: UIViewController {
 			return
 		}
 		
-		if let user = self.m_user,
-		let name = user.name,
-		let uid = user.uid {
+		if let name = self.m_user?.name,
+		let myId = self.m_user?.uid {
 			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
-			let values: NSMutableDictionary =
-				[
-					DEF_ROOM_MEMBERS_NICKNAME : name,
-					DEF_ROOM_MEMBERS_INDEX : 0,
-					DEF_ROOM_MEMBERS_CANDIDATE : false,
-					DEF_ROOM_MEMBERS_TEAM : 0,
-					DEF_ROOM_MEMBERS_VOTED : false,
-					DEF_ROOM_MEMBERS_POLL : 0,
-				]
-			refRoom.child(DEF_ROOM_MEMBERS).updateChildValues([uid : values])
+			refRoom.child(DEF_ROOM_MEMBERS).child(myId).observeSingleEvent(of: .value) {  (snapshot) in
+				if (!snapshot.hasChildren()) {
+					let values: NSMutableDictionary =
+						[
+							DEF_ROOM_MEMBERS_NICKNAME : name,
+							DEF_ROOM_MEMBERS_INDEX : 0,
+							DEF_ROOM_MEMBERS_CANDIDATE : false,
+							DEF_ROOM_MEMBERS_TEAM : 0,
+							DEF_ROOM_MEMBERS_VOTED : false,
+							DEF_ROOM_MEMBERS_POLL : 0,
+						]
+					refRoom.child(DEF_ROOM_MEMBERS).updateChildValues([myId : values])
+				}
+			}
 		}
 	}
 	
@@ -167,6 +173,7 @@ class RoomVC: UIViewController {
 			if let host = snapshot.value as? String,
 			let myId = self.m_user?.uid {
 				self.m_isHost = (host == myId)
+				self.m_stackBtns?.isHidden = !self.m_isHost
 			}
 		}
 		
@@ -242,11 +249,12 @@ class RoomVC: UIViewController {
 	@objc func clickGroup() {
 		let alert = UIAlertController.textAlert(title: "Group", msg: "count of team") { count in
 			if let _count = Int(count) {
-				self.randomGroup(_count)
+				self.randomGroup(_count) {
+					self.m_segment.selectedSegmentIndex = self.m_tableType.rawValue
+				}
 			}
 		}
 		self.present(alert, animated: true)
-		
 	}
 	
 	fileprivate func buildGroupArray(_ max: Int) {
@@ -260,7 +268,7 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	func randomGroup(_ max: Int) {
+	func randomGroup(_ max: Int, callback: @escaping () -> ()) {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -285,13 +293,20 @@ class RoomVC: UIViewController {
 						}
 					}
 					self.m_groupArray = groupArray
-//					self.buildGroupArray(max)
+
+					callback()
 				}
 			}
 		}
 	}
+	
 	@objc func clickSort() {
-		randomSort()
+		let alert = UIAlertController.checkAlert(title: "Sort", msg: "Sure?") {
+			self.randomSort {
+				self.m_segment.selectedSegmentIndex = self.m_tableType.rawValue
+			}
+		}
+		self.present(alert, animated: true)
 	}
 	
 	fileprivate func buildSortArray(_ randArray: [Int]) {
@@ -322,7 +337,23 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	func randomSort() {
+	@objc func reVote() {
+		guard let roomNum = self.m_room?.number else {
+			return
+		}
+		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+		refRoom.child(DEF_ROOM_MEMBERS).observeSingleEvent(of: .value) { (snapshot) in
+			if snapshot.hasChildren() {
+				for member in snapshot.children {
+					if let item = member as? DataSnapshot {
+						refRoom.child(DEF_ROOM_MEMBERS).child(item.key).updateChildValues([DEF_ROOM_MEMBERS_POLL : 0, DEF_ROOM_MEMBERS_VOTED : false])
+					}
+				}
+			}
+		}
+	}
+	
+	func randomSort(callback: @escaping () -> ()) {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -343,7 +374,7 @@ class RoomVC: UIViewController {
 							i += 1
 						}
 					}					
-//					self.buildSortArray(randArray)
+					callback()
 				}
 			}
 		}
@@ -362,53 +393,76 @@ class RoomVC: UIViewController {
 	}
 	
 	fileprivate func setupBtns() {
-		let btn1 = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
+		let btn1 = UIButton(frame: CGRect.zero)
 		btn1.setTitle("Group", for: .normal)
 		btn1.setTitleColor(.red, for: .normal)
 		view.addSubview(btn1)
 		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
 		
-		let btn2 = UIButton(frame: CGRect(x: 130, y: 30, width: 50, height: 50))
+		let btn2 = UIButton(frame: CGRect.zero)
 		btn2.setTitle("Add", for: .normal)
 		btn2.setTitleColor(.blue, for: .normal)
 		view.addSubview(btn2)
 		btn2.addTarget(self, action: #selector(clickAdd), for: .touchUpInside)
 		
-		let btn3 = UIButton(frame: CGRect(x: 230, y: 30, width: 50, height: 50))
+		let btn3 = UIButton(frame: CGRect.zero)
 		btn3.setTitle("Leave", for: .normal)
 		btn3.setTitleColor(.green, for: .normal)
 		view.addSubview(btn3)
 		btn3.addTarget(self, action: #selector(leaveRoom), for: .touchUpInside)
 		
-		let btn4 = UIButton(frame: CGRect(x: 330, y: 30, width: 50, height: 50))
+		let btn4 = UIButton(frame: CGRect.zero)
 		btn4.setTitle("Sort", for: .normal)
-		btn4.setTitleColor(.red, for: .normal)
+		btn4.setTitleColor(.yellow, for: .normal)
 		view.addSubview(btn4)
 		btn4.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
 		
-		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3, btn4])
+		let btn5 = UIButton(frame: CGRect.zero)
+		btn5.setTitle("Reset", for: .normal)
+		btn5.setTitleColor(.brown, for: .normal)
+		view.addSubview(btn5)
+		btn5.addTarget(self, action: #selector(reVote), for: .touchUpInside)
+		
+		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3, btn4, btn5])
 		if let stack = self.m_stackBtns {
 			stack.alignment = .fill
 			stack.distribution = .fillEqually
-			stack.frame = CGRect(x: 30, y: 30, width: 250, height: 50)
 			view.addSubview(stack)
+			
+			stack.translatesAutoresizingMaskIntoConstraints = false
+			stack.bottomAnchor.constraint(equalTo: self.view.readableContentGuide.bottomAnchor).isActive = true
+			stack.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
+			stack.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
+			stack.heightAnchor.constraint(equalToConstant: 50).isActive = true
 		}
+	}
+	
+	fileprivate func setupupSegment() {
+		
+		self.m_segment.insertSegment(withTitle: "normal", at: 0, animated: true)
+		self.m_segment.insertSegment(withTitle: "sort", at: 1, animated: true)
+		self.m_segment.insertSegment(withTitle: "group", at: 2, animated: true)
+		self.m_segment.selectedSegmentIndex = 0
+		self.m_segment.addTarget(self, action: #selector(clickSegment), for: .valueChanged)
+		view.addSubview(self.m_segment)
+		
+		self.m_segment.translatesAutoresizingMaskIntoConstraints = false
+		self.m_segment.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
+		self.m_segment.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
+		self.m_segment.widthAnchor.constraint(equalToConstant: 200).isActive = true
+		self.m_segment.heightAnchor.constraint(equalToConstant: 50).isActive = true
 	}
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
 		
+		setupupSegment()
+		
 		setupTableView()
 		
 		setupBtns()
 		
-		let segment = UISegmentedControl(frame: CGRect(x: 30, y: 130, width: 250, height: 50))
-		segment.insertSegment(withTitle: "normal", at: 0, animated: true)
-		segment.insertSegment(withTitle: "sort", at: 1, animated: true)
-		segment.insertSegment(withTitle: "group", at: 2, animated: true)
-		segment.selectedSegmentIndex = 0
-		view.addSubview(segment)
-		segment.addTarget(self, action: #selector(clickSegment), for: .valueChanged)
+		joinRoom()
 		
 		getRoomInfo()
         // Do any additional setup after loading the view.
@@ -475,8 +529,6 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 		cell.nameLabel.text = member?.nickname
 		cell.detailLabel.text = "\(member?.poll ?? 0)"
 		
-		cell.voteBtn.isEnabled = !self.m_isVoted
-		
 		let uid = member?.uid ?? ""
 		cell.uid = uid
 		if let _ = self.m_imgMap.index(forKey: uid) {
@@ -484,6 +536,10 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 		} else {
 			cell.imgView.image = UIImage(named: "smile")
 		}
+		
+		cell.voteBtn.isHidden = (self.m_user?.uid == uid)
+		cell.voteBtn.isEnabled = !self.m_isVoted
+		
 		return cell
 	}
 	

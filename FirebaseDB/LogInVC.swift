@@ -26,7 +26,7 @@ class LoginVC: UIViewController {
     // 意思就是「將Firebase使用者uid儲存愛變數uid中」，因為 var 代表「變數」，最終就變成 var uid = "Avdfu12ejsiod9"
     // 這樣，在我們需要使用者UID的時候（不論「從Firebase拿取資料」或是「從手機將資料放置到Firebase」皆需要用到）就可以輕易使用了！
 	
-	var uid = ""
+	var m_uid = ""
     
     
     override func viewDidLoad() {
@@ -58,12 +58,11 @@ class LoginVC: UIViewController {
             // 那怎麼變成 completion: { (user, error) in 這樣的呢？
             // 其實很簡單，只要在藍藍的 FIRAuthResultCallback? 按個 enter(return) 鍵，就會變成這樣囉
 			Auth.auth().createUser(withEmail: self.Email.text!, password: self.Password.text!, completion: { (user, error) in
-//			Auth.auth().createUser(withEmail: "ducksky13@gmail.com", password: "abc123", completion: { (user, error) in
                 if error == nil{
 					if let user = Auth.auth().currentUser{
                         
                         //這裏即是「var uid」那邊所說明的，將Firebase使用者uid儲存愛變數uid裡面，便可隨意使用，不用重複打這幾行程式碼
-                        self.uid = user.uid
+                        self.m_uid = user.uid
                     }
                 }
                 
@@ -76,7 +75,7 @@ class LoginVC: UIViewController {
 //				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Safety-Check").setValue("ON")
 				
 //                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//                let nextVC =  storyboard.instantiateViewController(withIdentifier: "SignUpViewControllerID") as! SignUpViewController
+//                let nextVC =  storyboard.instantiateViewController(withIdentifier: "SignUpViewControllerID") as! SignUpVC
 //                self.present(nextVC, animated: true, completion: nil)
 				
             })
@@ -87,7 +86,7 @@ class LoginVC: UIViewController {
 	fileprivate func createRoomAndMembers(_ roomId: Int) {
 		
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomId)")
-		refRoom.child(DEF_ROOM_HOST).setValue(self.uid)
+		refRoom.child(DEF_ROOM_HOST).setValue(self.m_uid)
 		refRoom.child(DEF_ROOM_GROUP).setValue(1)
 		refRoom.child(DEF_ROOM_TITLE).setValue("Welcome")
 		refRoom.child(DEF_ROOM_MESSAGE).setValue("Hello World!")
@@ -124,21 +123,17 @@ class LoginVC: UIViewController {
                 
                 if error == nil {
 					if let user = Auth.auth().currentUser{
-                        self.uid = user.uid
-                        
+                        self.m_uid = user.uid
                     }
                     
                     // Online-Status 是線上狀態，在點選「登入」按鈕後，將Online-Status設定為On
-					Database.database().reference(withPath: "Online-Status/\(self.uid)").setValue("ON")
+					Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
                     
                     //跳到確認頁
                     let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                    let nextVC = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID")as! ConfirmViewController
-					
-				
-
-					
-                    self.present(nextVC,animated:true,completion:nil)
+					if let vc = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID") as? ConfirmVC {
+						self.present(vc, animated: true)
+					}
 				} else {
 					print(error.debugDescription)
 				}
@@ -198,8 +193,8 @@ extension LoginVC: GIDSignInDelegate {
 			// ...
 //			print(authResult?.user)
 			if let uid = authResult?.user.uid {
-				self.uid = uid
-				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.uid)")
+				self.m_uid = uid
+				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_uid)")
 				refUser.observeSingleEvent(of: .value) { (snapshot) in
 					if !snapshot.hasChildren() {
 						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
@@ -210,11 +205,11 @@ extension LoginVC: GIDSignInDelegate {
 			
 		
 
-			Database.database().reference(withPath: "Online-Status/\(self.uid)").setValue("ON")
+			Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
 //		Database.database().reference().child("ID/\(self.uid)")).setValue(authResult?.user.email ?? "abc", forKey: "email")
 			//跳到確認頁
 			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			if let vc = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID") as? ConfirmViewController {
+			if let vc = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID") as? ConfirmVC {
 				self.present(vc, animated: true)
 			}
 		}

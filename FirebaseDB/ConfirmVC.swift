@@ -12,7 +12,7 @@ import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
 
-class ConfirmViewController: UIViewController {
+class ConfirmVC: UIViewController {
     
     //在這裡從Firebase load image
     @IBOutlet weak var loadImage: UIImageView!
@@ -67,7 +67,7 @@ class ConfirmViewController: UIViewController {
 								let vc = RoomVC()
 								vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil)
 								vc.m_user = user
-								vc.joinRoom()
+//								vc.joinRoom()
 								vc.view.backgroundColor = .lightGray
 								self.present(vc, animated: true)
 							}
@@ -169,7 +169,7 @@ class ConfirmViewController: UIViewController {
     @IBAction func changePersonInfo(_ sender: Any) {
         
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-		if let vc = storyboard.instantiateViewController(withIdentifier: "ChangeDataViewControllerID") as? ChangeDataViewController {
+		if let vc = storyboard.instantiateViewController(withIdentifier: "ChangeDataViewControllerID") as? ChangeVC {
 			if let img = self.loadImage.image {
 				print(img.size)
 				vc.m_image = img

@@ -13,7 +13,7 @@ import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
 
-class SignUpViewController: UIViewController {
+class SignUpVC: UIViewController {
     
     
     @IBOutlet weak var Name: UITextField!
@@ -114,7 +114,7 @@ class SignUpViewController: UIViewController {
 
 
 //添加照片的Extention
-extension SignUpViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension SignUpVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 		
