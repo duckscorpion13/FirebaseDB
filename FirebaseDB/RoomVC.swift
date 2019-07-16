@@ -396,37 +396,36 @@ class RoomVC: UIViewController {
 	}
 	
 	fileprivate func setupBtns() {
+		let btnExit = UIButton(frame: CGRect(x: 20, y: 20, width: 35, height: 35))
+//		btnExit.setTitle("Leave", for: .normal)
+		btnExit.setBackgroundImage(UIImage(named: "exit"), for: .normal)
+		view.addSubview(btnExit)
+		btnExit.addTarget(self, action: #selector(leaveRoom), for: .touchUpInside)
+		
+		
 		let btn1 = UIButton(frame: CGRect.zero)
 		btn1.setTitle("Group", for: .normal)
 		btn1.setTitleColor(.red, for: .normal)
-		view.addSubview(btn1)
 		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
 		
 		let btn2 = UIButton(frame: CGRect.zero)
 		btn2.setTitle("Add", for: .normal)
 		btn2.setTitleColor(.blue, for: .normal)
-		view.addSubview(btn2)
 		btn2.addTarget(self, action: #selector(clickAdd), for: .touchUpInside)
 		
 		let btn3 = UIButton(frame: CGRect.zero)
-		btn3.setTitle("Leave", for: .normal)
-		btn3.setTitleColor(.green, for: .normal)
-		view.addSubview(btn3)
-		btn3.addTarget(self, action: #selector(leaveRoom), for: .touchUpInside)
+		btn3.setTitle("Reset", for: .normal)
+		btn3.setTitleColor(.brown, for: .normal)
+		btn3.addTarget(self, action: #selector(reVote), for: .touchUpInside)
 		
 		let btn4 = UIButton(frame: CGRect.zero)
 		btn4.setTitle("Sort", for: .normal)
 		btn4.setTitleColor(.yellow, for: .normal)
-		view.addSubview(btn4)
 		btn4.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
 		
-		let btn5 = UIButton(frame: CGRect.zero)
-		btn5.setTitle("Reset", for: .normal)
-		btn5.setTitleColor(.brown, for: .normal)
-		view.addSubview(btn5)
-		btn5.addTarget(self, action: #selector(reVote), for: .touchUpInside)
+	
 		
-		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3, btn4, btn5])
+		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3, btn4])
 		if let stack = self.m_stackBtns {
 			stack.alignment = .fill
 			stack.distribution = .fillEqually

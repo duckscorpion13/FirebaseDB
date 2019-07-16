@@ -76,11 +76,27 @@ class CollectionVC: UIViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
-
+	
 		setupCollectionView()
 		
 		getRoomsInfo()
+		
+		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
+		btn.setTitle("test", for: .normal)
+		btn.setTitleColor(.blue, for: .normal)
+		view.addSubview(btn)
+		btn.addTarget(self, action: #selector(clickTest), for: .touchUpInside)
+		self.view.addSubview(btn)
     }
+	
+	@objc func clickTest() {
+		let alert = UIAlertController.tripleTextAlert(title: "New", msg: "Create Room") {
+			(title, msg ,num) in
+			self.createRoom(num, title: title ?? "", msg: msg ?? "")
+		}
+		self.present(alert, animated: true)
+	}
+	
 	func enterRoom(_ number: Int) {
 		let refRooms = Database.database().reference(withPath: "\(DEF_ROOM)")
 		refRooms.observeSingleEvent(of: .value) { (snapshot) in
@@ -93,7 +109,7 @@ class CollectionVC: UIViewController {
 								vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil, background: nil)
 								vc.m_user = user
 								//								vc.joinRoom()
-								vc.view.backgroundColor = .lightGray
+//								vc.view.backgroundColor = .lightGray
 								self.present(vc, animated: true)
 							}
 						}
@@ -103,6 +119,20 @@ class CollectionVC: UIViewController {
 		}
 		
 	}
+	
+	func createRoom(_ number: Int, title: String, msg: String) {
+		
+		if let myId = self.m_user?.uid {
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(number)")
+			refRoom.child(DEF_ROOM_HOST).setValue(myId)
+			refRoom.child(DEF_ROOM_GROUP).setValue(1)
+			refRoom.child(DEF_ROOM_TITLE).setValue(title)
+			refRoom.child(DEF_ROOM_MESSAGE).setValue(msg)
+			refRoom.child(DEF_ROOM_HOST).setValue(myId)
+			enterRoom(number)
+		}
+	}
+	
 	func getPhoto(_ roomNum: String) {
 		
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
@@ -217,7 +247,7 @@ extension CollectionVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
 extension CollectionVC: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: 100, height: 100)
+		return CGSize(width: 150, height: 150)
 	}
 	
 	// 设置cell和视图边的间距

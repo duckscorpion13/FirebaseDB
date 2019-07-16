@@ -72,4 +72,41 @@ extension UIAlertController {
 		
 		return alert
 	}
+	
+	class func tripleTextAlert(title: String, msg: String, callback: @escaping (String?, String?, Int) -> ()) -> UIAlertController {
+		
+		let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+		
+		alert.addTextField {
+			(textField: UITextField!) -> Void in
+			textField.placeholder = "Title"
+		}
+		
+		alert.addTextField {
+			(textField: UITextField!) -> Void in
+			textField.placeholder = "Message"
+		}
+		
+		alert.addTextField {
+			(textField: UITextField!) -> Void in
+			textField.placeholder = "Number"
+			textField.keyboardType = .numberPad
+		}
+		
+		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+		alert.addAction(cancelAction)
+		
+		let okAction = UIAlertAction(title: "OK", style: .default) {
+			_ in
+			if let numStr = alert.textFields?[2].text,
+				let num = Int(numStr) {
+				let title = alert.textFields?[0].text
+				let msg = alert.textFields?[1].text
+				callback(title, msg, num)
+			}
+		}
+		alert.addAction(okAction)
+		
+		return alert
+	}
 }

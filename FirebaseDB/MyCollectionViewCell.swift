@@ -15,13 +15,14 @@ class MyCollectionViewCell: UICollectionViewCell {
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		
-		
+		let titleHeight: CGFloat = 40.0
 		// 建立一個 UIImageView
-		imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
+		imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height - titleHeight))
+		imageView.contentMode = .scaleAspectFit
 		self.addSubview(imageView)
 		
 		// 建立一個 UILabel
-		titleLabel = UILabel(frame:CGRect(x: 0, y: 0, width: frame.width, height: 40))
+		titleLabel = UILabel(frame:CGRect(x: 0, y: frame.height - titleHeight, width: frame.width, height: titleHeight))
 		titleLabel.textAlignment = .center
 		titleLabel.textColor = UIColor.orange
 		self.addSubview(titleLabel)

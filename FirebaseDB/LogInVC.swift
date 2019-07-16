@@ -28,7 +28,6 @@ class LoginVC: UIViewController {
 	
 	var m_uid = ""
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -63,20 +62,13 @@ class LoginVC: UIViewController {
                         
                         //這裏即是「var uid」那邊所說明的，將Firebase使用者uid儲存愛變數uid裡面，便可隨意使用，不用重複打這幾行程式碼
                         self.m_uid = user.uid
+						
+						let storyboard = UIStoryboard(name: "Main", bundle: nil)
+						if let vc =  storyboard.instantiateViewController(withIdentifier: "SignUpViewControllerID") as? SignUpVC {
+							self.present(vc, animated: true, completion: nil)
+						}
                     }
                 }
-                
-                // 到了另一個重點啦！這是指在 database 中以 "ID/\(self.uid)/Profile/Safety-Check" 為路徑，設一個值: "ON"
-                // 要在 Database 中建立資訊，一定要 setvalue 才會成功喔！
-                
-                //「新增使用者」、「在Database中新增一個Safety-Check:"ON"」，接著就跳到註冊頁
-                // 另外提醒，這邊要在 Main.storyboard，Show Utilities，Identity inspector(左邊數來第三個)
-                // storyboardID 要記得改名字，像是這裡的SignUpViewController，要在storyboardID改成SignUpViewControllerID
-//				Database.database().reference(withPath: "ID/\(self.uid)/Profile/Safety-Check").setValue("ON")
-				
-//                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//                let nextVC =  storyboard.instantiateViewController(withIdentifier: "SignUpViewControllerID") as! SignUpVC
-//                self.present(nextVC, animated: true, completion: nil)
 				
             })
         }
@@ -140,8 +132,7 @@ class LoginVC: UIViewController {
                 
             })
         }
-
-    }   
+    }
 }
 
 extension LoginVC: GIDSignInUIDelegate {
@@ -200,18 +191,29 @@ extension LoginVC: GIDSignInDelegate {
 						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
 						refUser.child(DEF_USER_MAIL).setValue(authResult?.user.email ?? nil)
 					}
+					Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
+					if let dict = snapshot.value as? [String : Any] {
+						let user = ST_USER_INFO(uid: snapshot.key,
+											mail: dict[DEF_USER_MAIL] as? String,
+											phone: dict[DEF_USER_PHONE] as? String,
+											name: dict[DEF_USER_NAME] as? String,
+											photo: dict[DEF_USER_PHOTO] as? String,
+											sex: dict[DEF_USER_SEX] as? Int)
+						let tabbarCtl = UITabBarController()
+						let vc1 = CheckVC()
+						vc1.view.backgroundColor = .gray
+						let vc2 = CollectionVC()
+						vc2.view.backgroundColor = .gray
+						vc2.m_user = user
+						vc1.tabBarItem = UITabBarItem(tabBarSystemItem: .history, tag: 0)
+						vc2.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
+						tabbarCtl.viewControllers = [vc1, vc2]
+						self.present(tabbarCtl, animated: true)
+						
+					}
 				}
 			}
 			
-		
-
-			Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
-//		Database.database().reference().child("ID/\(self.uid)")).setValue(authResult?.user.email ?? "abc", forKey: "email")
-			//跳到確認頁
-			let storyboard = UIStoryboard(name: "Main", bundle: nil)
-			if let vc = storyboard.instantiateViewController(withIdentifier: "ConfirmViewControllerID") as? ConfirmVC {
-				self.present(vc, animated: true)
-			}
 		}
 	}
 	
