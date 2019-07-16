@@ -26,6 +26,7 @@ let DEF_ROOM_MESSAGE = "Message"
 let DEF_ROOM_TITLE = "Title"
 let DEF_ROOM_GROUP = "Group"
 let DEF_ROOM_RAND = "Rand"
+let DEF_ROOM_BACKGROUND = "Background"
 
 let DEF_ROOM_MEMBERS_CANDIDATE = "Candidate"
 let DEF_ROOM_MEMBERS_TEAM = "Team"
@@ -53,6 +54,8 @@ struct ST_ROOM_INFO: Codable {
 	var groups: Int?
 	var title: String?
 	var message: String?
+	
+	var background: String?
 }
 
 struct ST_MEMBER_INFO: Codable {

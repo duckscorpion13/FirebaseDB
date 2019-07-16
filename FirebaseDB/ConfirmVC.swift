@@ -50,7 +50,20 @@ class ConfirmVC: UIViewController {
 		btn2.setTitleColor(.blue, for: .normal)
 		view.addSubview(btn2)
 		btn2.addTarget(self, action: #selector(clickCreate), for: .touchUpInside)
+		
+		let btn3 = UIButton(frame: CGRect(x: 230, y: 30, width: 50, height: 50))
+		btn3.setTitle("Rooms", for: .normal)
+		btn3.setTitleColor(.green, for: .normal)
+		view.addSubview(btn3)
+		btn3.addTarget(self, action: #selector(clickRooms), for: .touchUpInside)
     }
+	
+	@objc func clickRooms() {
+		let vc = CollectionVC()
+		vc.view.backgroundColor = .lightGray
+		vc.m_user = self.m_user
+		self.present(vc, animated: true)
+	}
 	
 	@objc func clickEnter() {
 		enterRoom(11111)
@@ -65,7 +78,7 @@ class ConfirmVC: UIViewController {
 						if(room.key == String(number)) {
 							if let user = self.m_user {
 								let vc = RoomVC()
-								vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil)
+								vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil, background: nil)
 								vc.m_user = user
 //								vc.joinRoom()
 								vc.view.backgroundColor = .lightGray
@@ -76,7 +89,6 @@ class ConfirmVC: UIViewController {
 				}
 			}
 		}
-
 	}
 	
 	@objc func clickCreate() {

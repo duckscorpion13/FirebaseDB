@@ -10,8 +10,6 @@ import UIKit
 import FirebaseDatabase
 import FirebaseStorage
 
-private let reuseIdentifier = "TableCell"
-
 enum EN_TABLE_MODE: Int {
 	case TABLE_BY_DEFAULT = 0
 	case TABLE_BY_SORT
@@ -20,6 +18,7 @@ enum EN_TABLE_MODE: Int {
 
 class RoomVC: UIViewController {
 
+	private let reuseIdentifier = "TableCell"
 	
 	var m_stackBtns: UIStackView? = nil
 	
@@ -241,6 +240,10 @@ class RoomVC: UIViewController {
 					}
 					
 					self.m_imgMap[userId] = imageData
+					
+					DispatchQueue.main.async {
+						self.m_tableView.reloadData()
+					}
 				}
 			}
 		}
@@ -509,7 +512,7 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! MyTableViewCell
+		let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier, for: indexPath) as! MyTableViewCell
 		cell.delegate = self
 		var member: ST_MEMBER_INFO? = nil
 		switch self.m_tableType {

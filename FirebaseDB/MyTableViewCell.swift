@@ -78,21 +78,23 @@ class MyTableViewCell: UITableViewCell {
 		imgView.leadingAnchor.constraint(equalTo: marginGuide.leadingAnchor).isActive = true
 		imgView.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
 		imgView.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
-		imgView.widthAnchor.constraint(equalToConstant: 60).isActive = true
-		imgView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+		imgView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+		imgView.heightAnchor.constraint(equalToConstant: 80).isActive = true
 		
         // configure titleLabel
         contentView.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor).isActive = true
         nameLabel.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
-        nameLabel.numberOfLines = 0
-        
+		nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
+//        nameLabel.numberOfLines = 0
+		
         contentView.addSubview(detailLabel)
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
         detailLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor).isActive = true
         detailLabel.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
         detailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
+		detailLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
 	
 		contentView.addSubview(voteBtn)
 		voteBtn.translatesAutoresizingMaskIntoConstraints = false

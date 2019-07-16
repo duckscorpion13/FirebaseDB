@@ -22,6 +22,7 @@
 		F977DD3A22D6EC49007A9BF8 /* MyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */; };
 		F9ECC74622DC6F5E002CF008 /* UIAlertController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */; };
 		F9ECC74822DC8F85002CF008 /* CollectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74722DC8F85002CF008 /* CollectionVC.swift */; };
+		F9ECC74A22DD6ECB002CF008 /* MyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74922DD6ECB002CF008 /* MyCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTableViewCell.swift; sourceTree = "<group>"; };
 		F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+.swift"; sourceTree = "<group>"; };
 		F9ECC74722DC8F85002CF008 /* CollectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionVC.swift; sourceTree = "<group>"; };
+		F9ECC74922DD6ECB002CF008 /* MyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 			isa = PBXGroup;
 			children = (
 				F9ECC74722DC8F85002CF008 /* CollectionVC.swift */,
+				F9ECC74922DD6ECB002CF008 /* MyCollectionViewCell.swift */,
 				048F31021E433ECB007B579D /* AppDelegate.swift */,
 				F977DD3722D5D61B007A9BF8 /* LogInVC.swift */,
 				F96D1FE822D49153006F9242 /* RoomVC.swift */,
@@ -257,6 +260,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9ECC74A22DD6ECB002CF008 /* MyCollectionViewCell.swift in Sources */,
 				044FE50B1E4480D700A7B5F5 /* ConfirmVC.swift in Sources */,
 				F977DD3A22D6EC49007A9BF8 /* MyTableViewCell.swift in Sources */,
 				F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */,
