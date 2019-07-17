@@ -21,6 +21,7 @@ class CollectionVC: UIViewController {
 	
 	var m_rooms = [ST_ROOM_INFO]()
 	var m_imgMap = [String : UIImage]()
+	var m_image: UIImage? = nil
 	
 	fileprivate func setupCollectionView() {
 		// Uncomment the following line to preserve selection between presentations
@@ -90,11 +91,7 @@ class CollectionVC: UIViewController {
     }
 	
 	@objc func clickTest() {
-		let alert = UIAlertController.tripleTextAlert(title: "New", msg: "Create Room") {
-			(title, msg ,num) in
-			self.createRoom(num, title: title ?? "", msg: msg ?? "")
-		}
-		self.present(alert, animated: true)
+		openImgPicker()
 	}
 	
 	func enterRoom(_ number: Int) {
@@ -120,15 +117,25 @@ class CollectionVC: UIViewController {
 		
 	}
 	
-	func createRoom(_ number: Int, title: String, msg: String) {
+	func createRoom(_ number: Int, title: String, message: String, callback: @escaping () -> () = {}) {
 		
 		if let myId = self.m_user?.uid {
-			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(number)")
-			refRoom.child(DEF_ROOM_HOST).setValue(myId)
-			refRoom.child(DEF_ROOM_GROUP).setValue(1)
-			refRoom.child(DEF_ROOM_TITLE).setValue(title)
-			refRoom.child(DEF_ROOM_MESSAGE).setValue(msg)
-			refRoom.child(DEF_ROOM_HOST).setValue(myId)
+			let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)")
+			let values: [String : Any] =
+				[
+					DEF_ROOM_HOST : myId,
+					DEF_ROOM_GROUP : 1,
+					DEF_ROOM_TITLE : title,
+					DEF_ROOM_MESSAGE : message,
+				]
+			refRoom.updateChildValues(["\(number)" : values]) {_,_ in
+				callback()
+			}
+//			refRoom.child(DEF_ROOM_HOST).setValue(myId)
+//			refRoom.child(DEF_ROOM_GROUP).setValue(1)
+//			refRoom.child(DEF_ROOM_TITLE).setValue(title)
+//			refRoom.child(DEF_ROOM_MESSAGE).setValue(message)
+
 			enterRoom(number)
 		}
 	}
@@ -167,6 +174,61 @@ class CollectionVC: UIViewController {
 			}
 		}
 	}
+	
+	fileprivate func uploadImage(_ image: UIImage, roomNum: Int) {
+		
+		let uniqueString = UUID().uuidString
+		let storageRef = Storage.storage().reference().child("\(uniqueString).jpg")
+		if let uploadData = image.jpegData(compressionQuality: 0.1) {
+			// 這行就是 FirebaseStorage 關鍵的存取方法。
+			storageRef.putData(uploadData, metadata: nil) { (data, error) in
+				if error != nil {
+					//					print("Error: \(error!.localizedDescription)")
+					return
+				}
+				
+				if let uploadImageUrl = data?.path {
+					//					print("Photo Url: \(uploadImageUrl)")
+					
+					let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
+					refRoom.child(DEF_ROOM_BACKGROUND).setValue(uploadImageUrl) { (error, dataRef) in
+						
+						if error != nil {
+							print("Database Error: \(error!.localizedDescription)")
+						} else {
+							print("Success")
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	func openImgPicker() {
+		
+		// 建立一個 UIImagePickerController 的實體
+		let picker = UIImagePickerController()
+		
+		// 委任代理
+		picker.delegate = self
+		
+		let alert = UIAlertController.selectAction(title: "Upload Picture", message: "Select Image", actions: ["Album", "Camera"]) { select in
+			if(0 == select) {
+				if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+					picker.sourceType = .photoLibrary
+					self.present(picker, animated: true)
+				}
+			} else {
+				if UIImagePickerController.isSourceTypeAvailable(.camera) {
+					picker.sourceType = .camera
+					self.present(picker, animated: true)
+				}
+			}
+		}
+		// 當使用者按下 uploadBtnAction 時會 present 剛剛建立好的三個 UIAlertAction 動作與
+		present(alert, animated: true)
+	}
+	
 }
     /*
     // MARK: - Navigation
@@ -247,7 +309,8 @@ extension CollectionVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
 extension CollectionVC: UICollectionViewDelegateFlowLayout {
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-		return CGSize(width: 150, height: 150)
+		let edge = min(self.view.frame.width, self.view.frame.height) / 3
+		return CGSize(width: edge, height: edge)
 	}
 	
 	// 设置cell和视图边的间距
@@ -263,5 +326,35 @@ extension CollectionVC: UICollectionViewDelegateFlowLayout {
 	// 设置每一个cell的列间距
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
 		return 10
+	}
+}
+
+
+extension CollectionVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
+
+		// 取得從 UIImagePickerController 選擇的檔案
+		guard let pickedImage = info[.originalImage] as? UIImage else {
+			return
+		}
+
+		self.m_image = pickedImage
+		picker.dismiss(animated: true) {
+			let alert = UIAlertController.textsAlert(title: "New", message: "Create Room", placeholders: ["Title", "Message", "Number"]) {
+				para in
+				if (3 == para.count) {
+					if let num = Int(para[2]) {
+						self.createRoom(num, title: para[0], message: para[1]) {
+							if let img = self.m_image {
+								self.uploadImage(img, roomNum: num)
+							}
+						}
+					}
+				}
+			}
+			self.present(alert, animated: true)
+		}
 	}
 }

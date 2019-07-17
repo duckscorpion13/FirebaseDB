@@ -116,7 +116,7 @@ class RoomVC: UIViewController {
 		}
 		
 		if(self.m_isHost) {
-			let alert = UIAlertController.selectAlert(title: "Close", msg: "delete room, Sure?") {
+			let alert = UIAlertController.boolAction(title: "Close", message: "delete room, Sure?") {
 				isDelete in
 				if(isDelete) {
 					let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
@@ -250,10 +250,12 @@ class RoomVC: UIViewController {
 	}
 	
 	@objc func clickGroup() {
-		let alert = UIAlertController.textAlert(title: "Group", msg: "count of team") { count in
-			if let _count = Int(count) {
-				self.randomGroup(_count) {
-					self.m_segment.selectedSegmentIndex = self.m_tableType.rawValue
+		let alert = UIAlertController.textsAlert(title: "Group", message: "How many teams?", placeholders: ["Group"]) { array in
+			if(1 == array.count) {
+				if let count = Int(array[0]) {
+					self.randomGroup(count) {
+						self.m_segment.selectedSegmentIndex = self.m_tableType.rawValue
+					}
 				}
 			}
 		}
@@ -304,7 +306,7 @@ class RoomVC: UIViewController {
 	}
 	
 	@objc func clickSort() {
-		let alert = UIAlertController.checkAlert(title: "Sort", msg: "Sure?") {
+		let alert = UIAlertController.checkAction(title: "Sort", message: "Sure?") {
 			self.randomSort {
 				self.m_segment.selectedSegmentIndex = self.m_tableType.rawValue
 			}
@@ -479,8 +481,11 @@ class RoomVC: UIViewController {
 	}
 	
 	@objc func clickAdd() {
-		let alert = UIAlertController.textAlert(title: "New Member", msg: "Nickname") { name in
-			self.addMember(name)
+		let alert = UIAlertController.textsAlert(title: "New Member", message: "What's new member's nickname", placeholders: ["Name"]) { array in
+			if(1 == array.count) {
+				let name = array[0]
+				self.addMember(name)
+			}
 		}
 		self.present(alert, animated: true)
 	}
@@ -577,7 +582,7 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 			}
 			if let uid = member?.uid {
 				let name = self.getMemberInfo(uid)?.nickname ?? ""
-				let alert = UIAlertController.checkAlert(title: "Expel", msg: "ban \(name), sure?") {
+				let alert = UIAlertController.checkAction(title: "Expel", message: "ban \(name), sure?") {
 					self.expel(uid)
 				}
 				self.present(alert, animated: true)
@@ -592,7 +597,7 @@ extension RoomVC: MyTableViewCellDelegate {
 //		print(uid)\
 		if(!m_isVoted) {
 			let name = self.getMemberInfo(uid)?.nickname ?? ""
-			let alert = UIAlertController.checkAlert(title: "Vote", msg: "vote \(name) sure?") {
+			let alert = UIAlertController.checkAction(title: "Vote", message: "vote \(name) sure?") {
 				self.vote(uid)
 			}
 			self.present(alert, animated: true)

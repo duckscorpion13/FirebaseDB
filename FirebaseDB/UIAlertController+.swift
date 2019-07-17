@@ -10,36 +10,12 @@ import Foundation
 import UIKit
 
 extension UIAlertController {
-	class func textAlert(title: String, msg: String, callback: @escaping (String) -> ()) -> UIAlertController {
+	
+	class func checkAction(title: String, message: String, callback: @escaping () -> ()) -> UIAlertController {
 		
-		let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
-		
-		alert.addTextField {
-			(textField: UITextField!) -> Void in
-			//			textField.placeholder = "Name"
-		}
+		let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
 		
 		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-		alert.addAction(cancelAction)
-		
-		let okAction = UIAlertAction(title: "OK", style: .default) {
-			_ in
-			if let name = alert.textFields?.first?.text {
-				callback(name)
-			}
-		}
-		alert.addAction(okAction)
-		
-		return alert
-	}
-	
-	class func checkAlert(title: String, msg: String, callback: @escaping () -> ()) -> UIAlertController {
-		
-		let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
-		
-		let cancelAction = UIAlertAction(
-			title: "Cancel",
-			style: .cancel)
 		alert.addAction(cancelAction)
 		
 		let okAction = UIAlertAction(title: "OK", style: .default) {
@@ -51,46 +27,39 @@ extension UIAlertController {
 		return alert
 	}
 	
-	class func selectAlert(title: String, msg: String, callback: @escaping (Bool) -> ()) -> UIAlertController {
+	class func boolAction(title: String, message: String, callback: @escaping (Bool) -> ()) -> UIAlertController {
+		return selectAction(title: title, message: message, actions: ["YES", "NO"]) {
+			value in callback(value == 0)
+		}
+	}
+	
+	class func selectAction(title: String, message: String, actions: [String], callback: @escaping (Int) -> ()) -> UIAlertController {
 		
-		let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+		let alert = UIAlertController(title: title, message: message, preferredStyle: .actionSheet)
 		
 		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
 		alert.addAction(cancelAction)
 		
-		let okAction = UIAlertAction(title: "OK", style: .default) {
-			_ in
-			callback(true)
+		for action in actions {
+			let act = UIAlertAction(title: action, style: .default) {
+				_ in
+				callback(actions.index(of: action) ?? -1)
+			}
+			alert.addAction(act)
 		}
-		alert.addAction(okAction)
-		
-		let nakAction = UIAlertAction(title: "NO", style: .default) {
-			_ in
-			callback(false)
-		}
-		alert.addAction(nakAction)
 		
 		return alert
 	}
 	
-	class func tripleTextAlert(title: String, msg: String, callback: @escaping (String?, String?, Int) -> ()) -> UIAlertController {
+	class func textsAlert(title: String, message: String, placeholders: [String], callback: @escaping ([String]) -> ()) -> UIAlertController {
 		
-		let alert = UIAlertController(title: title, message: msg, preferredStyle: .alert)
+		let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 		
-		alert.addTextField {
-			(textField: UITextField!) -> Void in
-			textField.placeholder = "Title"
-		}
-		
-		alert.addTextField {
-			(textField: UITextField!) -> Void in
-			textField.placeholder = "Message"
-		}
-		
-		alert.addTextField {
-			(textField: UITextField!) -> Void in
-			textField.placeholder = "Number"
-			textField.keyboardType = .numberPad
+		for placeholder in placeholders {
+			alert.addTextField {
+				textField in
+				textField.placeholder = placeholder
+			}
 		}
 		
 		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
@@ -98,12 +67,14 @@ extension UIAlertController {
 		
 		let okAction = UIAlertAction(title: "OK", style: .default) {
 			_ in
-			if let numStr = alert.textFields?[2].text,
-				let num = Int(numStr) {
-				let title = alert.textFields?[0].text
-				let msg = alert.textFields?[1].text
-				callback(title, msg, num)
+			var paras = [String]()
+			if let fields = alert.textFields {
+				for field in fields{
+					let para = field.text ?? ""
+					paras.append(para)
+				}
 			}
+			callback(paras)
 		}
 		alert.addAction(okAction)
 		
