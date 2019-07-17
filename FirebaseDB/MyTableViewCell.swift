@@ -1,6 +1,6 @@
 //
 //  MyTableViewCell.swift
-//  StreetView
+//  FirebaseDB
 //
 //  Created by Derek 2019/5/3.
 //
@@ -84,14 +84,14 @@ class MyTableViewCell: UITableViewCell {
         // configure titleLabel
         contentView.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor).isActive = true
+        nameLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10).isActive = true
         nameLabel.topAnchor.constraint(equalTo: marginGuide.topAnchor).isActive = true
 		nameLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true
 //        nameLabel.numberOfLines = 0
 		
         contentView.addSubview(detailLabel)
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
-        detailLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor).isActive = true
+        detailLabel.leadingAnchor.constraint(equalTo: imgView.trailingAnchor, constant: 10).isActive = true
         detailLabel.bottomAnchor.constraint(equalTo: marginGuide.bottomAnchor).isActive = true
         detailLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor).isActive = true
 		detailLabel.heightAnchor.constraint(equalToConstant: 40).isActive = true

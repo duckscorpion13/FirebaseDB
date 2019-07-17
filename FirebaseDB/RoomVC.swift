@@ -44,17 +44,44 @@ class RoomVC: UIViewController {
 		
 		self.m_tableView.register(MyTableViewCell.self, forCellReuseIdentifier: reuseIdentifier)
 		
+		let refresh = UIRefreshControl()
+		refresh.addTarget(self, action: #selector(refetch), for: .valueChanged)
+		refresh.backgroundColor = .white
+		if #available(iOS 10.0, *) {
+			self.m_tableView.refreshControl = refresh
+		} else {
+			// Fallback on earlier versions
+			self.m_tableView.addSubview(refresh)
+		}
+		
 		self.m_tableView.translatesAutoresizingMaskIntoConstraints = false
 		self.view.addSubview(self.m_tableView)
-		self.m_tableView.topAnchor.constraint(equalTo: self.m_segment.bottomAnchor, constant: 10).isActive = true
+		self.m_tableView.topAnchor.constraint(equalTo: self.m_segment.bottomAnchor, constant: 15).isActive = true
 		self.m_tableView.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 		self.m_tableView.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
-		self.m_tableView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 0.65).isActive = true
+		self.m_tableView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 0.85).isActive = true
 		
 		self.m_tableView.dataSource = self
 		self.m_tableView.delegate = self
 		
 //		print(randomIndex(10))
+	}
+	
+	@objc func refetch(_ sender: Any) {
+		if let refresh = sender as? UIRefreshControl {
+			print("aaaaaa")
+			if(m_isHost) {
+				switch self.m_tableType {
+				case .TABLE_BY_GROUP:
+					self.randomGroup(self.m_room?.groups ?? 1)
+				case .TABLE_BY_SORT:
+					self.randomSort()
+				default: break
+					
+				}
+			}
+			refresh.endRefreshing()
+		}
 	}
 	
 	func updateRand(_ total: Int) {
@@ -216,15 +243,9 @@ class RoomVC: UIViewController {
 	func getPhoto(_ userId: String) {
 		
 		let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(userId)")
-		//從database抓取url，再從storage下載圖片
-		//先在database找到存放url的路徑
-		//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
-		//observe 到 .value
 		refUser.child(DEF_USER_PHOTO).observe(.value) { (snapshot) in
-			//存放在這個 url
 			if let url = snapshot.value as? String {
-				let maxSize : Int64 =  2 * 1024 * 1024 //大小：2MB，可視情況改變
-				//從Storage抓這個圖片
+				let maxSize : Int64 =  2 * 1024 * 1024 //2MB
 				Storage.storage().reference().child(url).getData(maxSize: maxSize) { (data, error) in
 					if error != nil {
 						print(error.debugDescription)
@@ -273,7 +294,7 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	func randomGroup(_ max: Int, callback: @escaping () -> ()) {
+	func randomGroup(_ max: Int, callback: @escaping () -> () = {}) {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -342,7 +363,7 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	@objc func reVote() {
+	@objc func resetVoted() {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -358,7 +379,7 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	func randomSort(callback: @escaping () -> ()) {
+	func randomSort(callback: @escaping () -> () = {}) {
 		guard let roomNum = self.m_room?.number else {
 			return
 		}
@@ -398,37 +419,53 @@ class RoomVC: UIViewController {
 	}
 	
 	fileprivate func setupBtns() {
-		let btnExit = UIButton(frame: CGRect(x: 20, y: 20, width: 35, height: 35))
+		let btnExit = UIButton(frame: .zero)
 //		btnExit.setTitle("Leave", for: .normal)
 		btnExit.setBackgroundImage(UIImage(named: "exit"), for: .normal)
 		view.addSubview(btnExit)
+		btnExit.translatesAutoresizingMaskIntoConstraints = false
+		btnExit.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 30).isActive = true
+		btnExit.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15).isActive = true
+		btnExit.widthAnchor.constraint(equalToConstant: 35).isActive = true
+		btnExit.heightAnchor.constraint(equalToConstant: 35).isActive = true
 		btnExit.addTarget(self, action: #selector(leaveRoom), for: .touchUpInside)
+		
+	
+		let btnAdd = UIButton(frame: CGRect.zero)
+//		btnAdd.setTitle("Add", for: .normal)
+		btnAdd.setBackgroundImage(UIImage(named: "add"), for: .normal)
+		view.addSubview(btnAdd)
+		btnAdd.translatesAutoresizingMaskIntoConstraints = false
+		btnAdd.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 30).isActive = true
+		btnAdd.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -15).isActive = true
+		btnAdd.widthAnchor.constraint(equalToConstant: 35).isActive = true
+		btnAdd.heightAnchor.constraint(equalToConstant: 35).isActive = true
+		btnAdd.addTarget(self, action: #selector(clickAdd), for: .touchUpInside)
 		
 		
 		let btn1 = UIButton(frame: CGRect.zero)
+		btn1.backgroundColor = .white
 		btn1.setTitle("Group", for: .normal)
 		btn1.setTitleColor(.red, for: .normal)
-		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
+		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)	
 		
 		let btn2 = UIButton(frame: CGRect.zero)
-		btn2.setTitle("Add", for: .normal)
-		btn2.setTitleColor(.blue, for: .normal)
-		btn2.addTarget(self, action: #selector(clickAdd), for: .touchUpInside)
+		btn2.backgroundColor = .white
+		btn2.setTitle("Reset", for: .normal)
+		btn2.setTitleColor(.green, for: .normal)
+		btn2.addTarget(self, action: #selector(resetVoted), for: .touchUpInside)
 		
 		let btn3 = UIButton(frame: CGRect.zero)
-		btn3.setTitle("Reset", for: .normal)
-		btn3.setTitleColor(.brown, for: .normal)
-		btn3.addTarget(self, action: #selector(reVote), for: .touchUpInside)
-		
-		let btn4 = UIButton(frame: CGRect.zero)
-		btn4.setTitle("Sort", for: .normal)
-		btn4.setTitleColor(.yellow, for: .normal)
-		btn4.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
+		btn3.backgroundColor = .white
+		btn3.setTitle("Sort", for: .normal)
+		btn3.setTitleColor(.blue, for: .normal)
+		btn3.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
 		
 	
 		
-		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3, btn4])
+		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3])
 		if let stack = self.m_stackBtns {
+			
 			stack.alignment = .fill
 			stack.distribution = .fillEqually
 			view.addSubview(stack)
@@ -454,7 +491,7 @@ class RoomVC: UIViewController {
 		self.m_segment.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
 		self.m_segment.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
 		self.m_segment.widthAnchor.constraint(equalToConstant: 200).isActive = true
-		self.m_segment.heightAnchor.constraint(equalToConstant: 50).isActive = true
+		self.m_segment.heightAnchor.constraint(equalToConstant: 35).isActive = true
 	}
 	
 	override func viewDidLoad() {
@@ -490,7 +527,9 @@ class RoomVC: UIViewController {
 		self.present(alert, animated: true)
 	}
 	
-	
+	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+		self.view.endEditing(true)
+	}
     /*
     // MARK: - Navigation
 

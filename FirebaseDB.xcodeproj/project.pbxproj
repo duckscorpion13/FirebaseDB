@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		044FE5091E4480B700A7B5F5 /* ChangeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE5081E4480B700A7B5F5 /* ChangeVC.swift */; };
-		044FE50B1E4480D700A7B5F5 /* ConfirmVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE50A1E4480D700A7B5F5 /* ConfirmVC.swift */; };
 		048F31031E433ECB007B579D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31021E433ECB007B579D /* AppDelegate.swift */; };
 		048F31051E433ECB007B579D /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31041E433ECB007B579D /* SignUpVC.swift */; };
 		048F31081E433ECB007B579D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 048F31061E433ECB007B579D /* Main.storyboard */; };
@@ -28,7 +27,6 @@
 
 /* Begin PBXFileReference section */
 		044FE5081E4480B700A7B5F5 /* ChangeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeVC.swift; sourceTree = "<group>"; };
-		044FE50A1E4480D700A7B5F5 /* ConfirmVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmVC.swift; sourceTree = "<group>"; };
 		048F30FF1E433ECB007B579D /* FirebaseDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		048F31021E433ECB007B579D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		048F31041E433ECB007B579D /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
@@ -90,7 +88,6 @@
 				F96D1FE822D49153006F9242 /* RoomVC.swift */,
 				F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */,
 				048F31041E433ECB007B579D /* SignUpVC.swift */,
-				044FE50A1E4480D700A7B5F5 /* ConfirmVC.swift */,
 				F9ECC74B22DDB311002CF008 /* CheckVC.swift */,
 				044FE5081E4480B700A7B5F5 /* ChangeVC.swift */,
 				F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */,
@@ -264,7 +261,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9ECC74A22DD6ECB002CF008 /* MyCollectionViewCell.swift in Sources */,
-				044FE50B1E4480D700A7B5F5 /* ConfirmVC.swift in Sources */,
 				F977DD3A22D6EC49007A9BF8 /* MyTableViewCell.swift in Sources */,
 				F9ECC74C22DDB311002CF008 /* CheckVC.swift in Sources */,
 				F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */,

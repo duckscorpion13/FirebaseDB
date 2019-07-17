@@ -3,7 +3,7 @@
 //  FirebaseDB
 //
 //  Created by Derek on 2019/2/3.
-//  Copyright © 2019年 Derek. All rights reserved.
+//  Copyright © 2019 Derek. All rights reserved.
 
 
 import UIKit
@@ -33,22 +33,19 @@ class ChangeVC: UIViewController {
         }
     
 		let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
-        
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Name")
+		
         refUser.child(DEF_USER_NAME).observeSingleEvent(of: .value, with: { (snapshot) in
 			if let name = snapshot.value as? String {
             	self.name.text = name
 			}
         })
-        
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Gender")
+		
 		refUser.child(DEF_USER_SEX).observeSingleEvent(of: .value, with: { (snapshot) in
 			if let gender = snapshot.value as? Int {
             	self.gender.selectedSegmentIndex = gender
 			}
         })
-        
-//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Phone")
+		
 		refUser.child(DEF_USER_PHONE).observeSingleEvent(of: .value, with: { (snapshot) in
 			if let phone = snapshot.value as? String {
             	self.phone.text = phone
@@ -56,7 +53,11 @@ class ChangeVC: UIViewController {
         })
     
     }
-    
+	
+	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+		self.view.endEditing(true)
+	}
+	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -64,11 +65,9 @@ class ChangeVC: UIViewController {
 	
     
     @IBAction func openImgPC(_ sender: Any) {
-        
-        // 建立一個 UIImagePickerController 的實體
+		
         let picker = UIImagePickerController()
-        
-        // 委任代理
+		
         picker.delegate = self
         
 		let alert = UIAlertController.selectAction(title: "Upload Picture", message: "Select Image", actions: ["Album", "Camera"]) { select in
@@ -84,10 +83,8 @@ class ChangeVC: UIViewController {
 				}
 			}
 		}
-        // 當使用者按下 uploadBtnAction 時會 present 剛剛建立好的三個 UIAlertAction 動作與
         present(alert, animated: true)
-        
-
+		
     }
 	
 	fileprivate func uploadImage(_ image: UIImage) {
@@ -95,7 +92,6 @@ class ChangeVC: UIViewController {
 		let uniqueString = UUID().uuidString
 		let storageRef = Storage.storage().reference().child("\(uniqueString).jpg")
 		if let uploadData = image.jpegData(compressionQuality: 0.1) {
-			// 這行就是 FirebaseStorage 關鍵的存取方法。
 			storageRef.putData(uploadData, metadata: nil) { (data, error) in
 				if error != nil {
 					//					print("Error: \(error!.localizedDescription)")
@@ -120,8 +116,7 @@ class ChangeVC: UIViewController {
 	}
 	
     @IBAction func save(_ sender: Any) {
-        
-        
+		
         if name.text != "" && phone.text != "" {
 			let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_userId)")
 			
@@ -135,8 +130,6 @@ class ChangeVC: UIViewController {
 			
 			self.dismiss(animated: true)
         }
-        
-
     }
     
 }
@@ -146,8 +139,7 @@ extension ChangeVC: UIImagePickerControllerDelegate, UINavigationControllerDeleg
 	
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
 		
-		
-        // 取得從 UIImagePickerController 選擇的檔案
+        // get picked image
         guard let pickedImage = info[.originalImage] as? UIImage else {
 			return
 		}

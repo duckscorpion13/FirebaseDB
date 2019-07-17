@@ -14,12 +14,15 @@ import FirebaseStorage
 class CollectionVC: UIViewController {
 	private let reuseIdentifier = "CollectionCell"
 
+	var m_isFilter = false
+	
 	var m_user: ST_USER_INFO? = nil
 	var fullScreenSize :CGSize! = UIScreen.main.bounds.size
 	
 	var m_collectionView: UICollectionView!
 	
 	var m_rooms = [ST_ROOM_INFO]()
+	var m_filterRooms = [ST_ROOM_INFO]()
 	var m_imgMap = [String : UIImage]()
 	var m_image: UIImage? = nil
 	
@@ -27,13 +30,17 @@ class CollectionVC: UIViewController {
 		// Uncomment the following line to preserve selection between presentations
 		// self.clearsSelectionOnViewWillAppear = false
 		
-		self.m_collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+		let layout = UICollectionViewFlowLayout()
+		layout.headerReferenceSize = CGSize(width: fullScreenSize.width, height: 40)
+		self.m_collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
 		
 		// Register cell classes
 		self.m_collectionView.register(MyCollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+		self.m_collectionView.register(UICollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "Header")
 		self.m_collectionView.delegate = self
 		self.m_collectionView.dataSource = self
 		
+	
 		
 		self.view.addSubview(self.m_collectionView)
 		self.m_collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -41,7 +48,18 @@ class CollectionVC: UIViewController {
 //		self.m_collectionView.bottomAnchor.constraint(equalTo: self.view.readableContentGuide.bottomAnchor).isActive = true
 		self.m_collectionView.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 		self.m_collectionView.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
-		self.m_collectionView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 2/3).isActive = true
+		self.m_collectionView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 4/5).isActive = true
+		
+		
+		let field = UITextField(frame: .zero)
+		field.delegate = self
+		field.backgroundColor = .white
+		self.view.addSubview(field)
+		field.translatesAutoresizingMaskIntoConstraints = false
+		field.heightAnchor.constraint(equalToConstant: 35).isActive = true
+		field.widthAnchor.constraint(equalToConstant: 180).isActive = true
+		field.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
+		field.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
 	}
 	
 	fileprivate func getRoomsInfo() {
@@ -77,17 +95,23 @@ class CollectionVC: UIViewController {
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
-	
+		
 		setupCollectionView()
 		
 		getRoomsInfo()
 		
-		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
-		btn.setTitle("test", for: .normal)
+		
+		
+		let btn = UIButton(frame: .zero)
+		btn.setTitle("Create Room", for: .normal)
 		btn.setTitleColor(.blue, for: .normal)
-		view.addSubview(btn)
 		btn.addTarget(self, action: #selector(clickTest), for: .touchUpInside)
 		self.view.addSubview(btn)
+		btn.translatesAutoresizingMaskIntoConstraints = false
+		btn.heightAnchor.constraint(equalToConstant: 50).isActive = true
+		btn.widthAnchor.constraint(equalToConstant: 150).isActive = true
+		btn.bottomAnchor.constraint(equalTo: self.view.readableContentGuide.bottomAnchor, constant: -20).isActive = true
+		btn.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
     }
 	
 	@objc func clickTest() {
@@ -229,6 +253,9 @@ class CollectionVC: UIViewController {
 		present(alert, animated: true)
 	}
 	
+	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+		self.view.endEditing(true)
+	}
 }
     /*
     // MARK: - Navigation
@@ -250,21 +277,25 @@ extension CollectionVC: UICollectionViewDelegate, UICollectionViewDataSource {
 
 	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of items
-        return self.m_rooms.count
+		if(m_isFilter) {
+			return self.m_filterRooms.count
+		} else {
+        	return self.m_rooms.count
+		}
 	}
 
 	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 		// 依據前面註冊設置的識別名稱 "Cell" 取得目前使用的 cell
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MyCollectionViewCell
 		
-		let roomNum = String(self.m_rooms[indexPath.row].number ?? 0)
+		let roomNum = m_isFilter ? String(self.m_filterRooms[indexPath.row].number ?? 0) : String(self.m_rooms[indexPath.row].number ?? 0)
 		// 設置 cell 內容 (即自定義元件裡 增加的圖片與文字元件)
 		if let _ = self.m_imgMap.index(forKey: roomNum) {
 			cell.imageView.image = self.m_imgMap[roomNum]
 		} else {
 			cell.imageView.image = UIImage(named: "smile")
 		}
-		cell.titleLabel.text = self.m_rooms[indexPath.row].title
+		cell.titleLabel.text = m_isFilter ? self.m_filterRooms[indexPath.row].title : self.m_rooms[indexPath.row].title
 		
 		return cell
 	}
@@ -274,6 +305,12 @@ extension CollectionVC: UICollectionViewDelegate, UICollectionViewDataSource {
 			self.enterRoom(roomNum)
 		}
 	}
+	
+//	func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+//
+//	}
+	
+	
     // MARK: UICollectionViewDelegate
 
     /*
@@ -357,4 +394,57 @@ extension CollectionVC: UIImagePickerControllerDelegate, UINavigationControllerD
 			self.present(alert, animated: true)
 		}
 	}
+}
+
+extension CollectionVC: UITextFieldDelegate {
+//	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool // return NO to disallow editing.
+//
+//	@available(iOS 2.0, *)
+//	optional func textFieldDidBeginEditing(_ textField: UITextField) // became first responder
+//
+//	@available(iOS 2.0, *)
+//	optional
+	func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+		if let text = textField.text,
+		text != "" {
+			self.m_filterRooms = self.m_rooms.filter({info in
+				if let title = info.title?.lowercased(),
+					let _ = title.range(of: text.lowercased()) {
+					return true
+				} else {
+					return false
+				}
+			})
+			self.m_isFilter = true
+		} else {
+			self.m_isFilter = false
+		}
+		self.m_collectionView.reloadData()
+		
+		return true
+	}// return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
+//
+//	@available(iOS 2.0, *)
+//	optional func textFieldDidEndEditing(_ textField: UITextField) // may be called if forced even if shouldEndEditing returns NO (e.g. view removed from window) or endEditing:YES called
+//
+//	@available(iOS 10.0, *)
+//	optional func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) // if implemented, called in place of textFieldDidEndEditing:
+//
+//
+//	@available(iOS 2.0, *)
+//	optional
+//	func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+//		print("BBBBBBBBBBBBB")
+//
+//		return true
+//	}// return NO to not change text
+//
+//
+//	@available(iOS 2.0, *)
+//	optional
+//	func textFieldShouldClear(_ textField: UITextField) -> Bool {// called when clear button pressed. return NO to ignore (no notifications)
+//		return true
+//	}
+//	@available(iOS 2.0, *)
+//	optional func textFieldShouldReturn(_ textField: UITextField) -> Bool // called when 'return' key pressed. return NO to ignore.
 }
