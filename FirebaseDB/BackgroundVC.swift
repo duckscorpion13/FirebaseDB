@@ -19,8 +19,15 @@ class BackgroundVC: UIViewController {
 		if let img = self.m_background {
 			setupBackground(img)
 		}
+		
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
-    
+	
+	deinit {
+		NotificationCenter.default.removeObserver(self)
+	}
+	
 	fileprivate func setupBackground(_ image: UIImage) {
 		let imgView = UIImageView(image: image)
 		self.view.addSubview(imgView)
@@ -34,7 +41,25 @@ class BackgroundVC: UIViewController {
 	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
 		self.view.endEditing(true)
 	}
+		
+	@objc func keyboardWillShow(notification: Notification)
+	{
+		if let userInfo = notification.userInfo {
+			if let keyboardSize = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+//				print("keyboardDidShow: \(keyboardSize)")
+				UIView.animate(withDuration: 0.4) {
+					self.view.frame.origin.y = -keyboardSize.height
+				}
+			}
+		}
+	}
 	
+	@objc func keyboardWillHide(notification: Notification)
+	{
+		UIView.animate(withDuration: 0.4) {
+			self.view.frame.origin.y = 0
+		}
+	}
     /*
     // MARK: - Navigation
 
@@ -47,26 +72,4 @@ class BackgroundVC: UIViewController {
 
 }
 
-extension BackgroundVC: UITextFieldDelegate {
-	
-	func textFieldDidEndEditing(_ textField: UITextField) {
-		
-		textField.resignFirstResponder()
-		
-		UIView.animate(withDuration: 0.4) {
-			self.view.frame.origin.y = 0
-		}
-	}
-	
-	func textFieldDidBeginEditing(_ textField: UITextField)  {
-		
-		UIView.animate(withDuration: 0.4) {
-			self.view.frame.origin.y = -150
-		}
-	}
-	
-	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-		textField.resignFirstResponder()
-		return true
-	}
-}
+

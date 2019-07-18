@@ -52,7 +52,6 @@ class LoginVC: BackgroundVC {
 						}
                     }
                 }
-				
             })
         }
     }
@@ -193,5 +192,11 @@ extension LoginVC: GIDSignInDelegate {
 		print ("didDisconnectWith")
 	}
 	
-	
+}
+
+extension LoginVC: UITextFieldDelegate {
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		textField.resignFirstResponder()
+		return true
+	}
 }

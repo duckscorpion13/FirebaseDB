@@ -257,18 +257,15 @@ class CheckVC: BackgroundVC {
 		// Dispose of any resources that can be recreated.
 	}
 	
-	// go ChangeVC
+	// go ModifyVC
 	@objc func changePersonInfo(_ sender: Any) {
 		
-//		let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//		if let vc = storyboard.instantiateViewController(withIdentifier: "ChangeDataViewControllerID") as? ChangeVC {
 		let vc = ModifyVC()
-			if let img = self.m_imgView.image {
+		if let img = self.m_imgView.image {
 //				print(img.size)
-				vc.m_selfie = img
-			}
-			self.present(vc, animated: true)
-//		}
+			vc.m_selfie = img
+		}
+		self.present(vc, animated: true)
 	}
 	
 
