@@ -16,7 +16,7 @@ enum EN_TABLE_MODE: Int {
 	case TABLE_BY_GROUP
 }
 
-class RoomVC: UIViewController {
+class RoomVC: BackgroundVC {
 
 	private let reuseIdentifier = "TableCell"
 	
@@ -53,6 +53,12 @@ class RoomVC: UIViewController {
 			// Fallback on earlier versions
 			self.m_tableView.addSubview(refresh)
 		}
+		
+		let blurEffect = UIBlurEffect(style: .light)
+		let blurView = UIVisualEffectView(effect: blurEffect)
+		blurView.alpha = 0.8
+		self.m_tableView.backgroundView = blurView
+		self.m_tableView.backgroundColor = .clear
 		
 		self.m_tableView.translatesAutoresizingMaskIntoConstraints = false
 		self.view.addSubview(self.m_tableView)
@@ -424,7 +430,7 @@ class RoomVC: UIViewController {
 		btnExit.setBackgroundImage(UIImage(named: "exit"), for: .normal)
 		view.addSubview(btnExit)
 		btnExit.translatesAutoresizingMaskIntoConstraints = false
-		btnExit.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 30).isActive = true
+		btnExit.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 35).isActive = true
 		btnExit.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 15).isActive = true
 		btnExit.widthAnchor.constraint(equalToConstant: 35).isActive = true
 		btnExit.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -436,7 +442,7 @@ class RoomVC: UIViewController {
 		btnAdd.setBackgroundImage(UIImage(named: "add"), for: .normal)
 		view.addSubview(btnAdd)
 		btnAdd.translatesAutoresizingMaskIntoConstraints = false
-		btnAdd.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 30).isActive = true
+		btnAdd.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 35).isActive = true
 		btnAdd.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -15).isActive = true
 		btnAdd.widthAnchor.constraint(equalToConstant: 35).isActive = true
 		btnAdd.heightAnchor.constraint(equalToConstant: 35).isActive = true
@@ -444,30 +450,36 @@ class RoomVC: UIViewController {
 		
 		
 		let btn1 = UIButton(frame: CGRect.zero)
-		btn1.backgroundColor = .white
-		btn1.setTitle("Group", for: .normal)
-		btn1.setTitleColor(.red, for: .normal)
-		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)	
+		btn1.setBackgroundImage(UIImage(named: "team"), for: .normal)
+//		btn1.backgroundColor = .white
+//		btn1.setTitle("Team", for: .normal)
+//		btn1.setTitleColor(.red, for: .normal)
+		btn1.addTarget(self, action: #selector(clickGroup), for: .touchUpInside)
+		btn1.widthAnchor.constraint(equalTo: btn1.heightAnchor).isActive = true
 		
 		let btn2 = UIButton(frame: CGRect.zero)
-		btn2.backgroundColor = .white
-		btn2.setTitle("Reset", for: .normal)
-		btn2.setTitleColor(.green, for: .normal)
+		btn2.setBackgroundImage(UIImage(named: "reset"), for: .normal)
+//		btn2.backgroundColor = .white
+//		btn2.setTitle("Reset", for: .normal)
+//		btn2.setTitleColor(.green, for: .normal)
 		btn2.addTarget(self, action: #selector(resetVoted), for: .touchUpInside)
+		btn2.widthAnchor.constraint(equalTo: btn2.heightAnchor).isActive = true
 		
 		let btn3 = UIButton(frame: CGRect.zero)
-		btn3.backgroundColor = .white
-		btn3.setTitle("Sort", for: .normal)
-		btn3.setTitleColor(.blue, for: .normal)
+		btn3.setBackgroundImage(UIImage(named: "sort"), for: .normal)
+//		btn3.backgroundColor = .white
+//		btn3.setTitle("Sort", for: .normal)
+//		btn3.setTitleColor(.blue, for: .normal)
 		btn3.addTarget(self, action: #selector(clickSort), for: .touchUpInside)
+		btn3.widthAnchor.constraint(equalTo: btn3.heightAnchor).isActive = true
 		
 	
 		
 		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3])
 		if let stack = self.m_stackBtns {
 			
-			stack.alignment = .fill
-			stack.distribution = .fillEqually
+			stack.alignment = .center
+			stack.distribution = .equalSpacing
 			view.addSubview(stack)
 			
 			stack.translatesAutoresizingMaskIntoConstraints = false
@@ -478,8 +490,10 @@ class RoomVC: UIViewController {
 		}
 	}
 	
-	fileprivate func setupupSegment() {
+	fileprivate func setupSegment() {
 		
+		self.m_segment.tintColor = .red
+	
 		self.m_segment.insertSegment(withTitle: "normal", at: 0, animated: true)
 		self.m_segment.insertSegment(withTitle: "sort", at: 1, animated: true)
 		self.m_segment.insertSegment(withTitle: "group", at: 2, animated: true)
@@ -488,16 +502,16 @@ class RoomVC: UIViewController {
 		view.addSubview(self.m_segment)
 		
 		self.m_segment.translatesAutoresizingMaskIntoConstraints = false
-		self.m_segment.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
+		self.m_segment.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor, constant: 15).isActive = true
 		self.m_segment.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
-		self.m_segment.widthAnchor.constraint(equalToConstant: 200).isActive = true
-		self.m_segment.heightAnchor.constraint(equalToConstant: 35).isActive = true
+		self.m_segment.widthAnchor.constraint(equalToConstant: 250).isActive = true
+		self.m_segment.heightAnchor.constraint(equalToConstant: 40).isActive = true
 	}
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
 		
-		setupupSegment()
+		setupSegment()
 		
 		setupTableView()
 		

@@ -12,21 +12,26 @@ import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
 
-class ChangeVC: UIViewController {
+class ChangeVC: BackgroundVC {
     
     
+	@IBOutlet weak var m_saveBtn: UIButton!
 	@IBOutlet weak var photo: UIButton!
 	@IBOutlet weak var name: UITextField!
     @IBOutlet weak var phone: UITextField!
 	@IBOutlet weak var gender: UISegmentedControl!
+	
 	var m_userId = ""
-	var m_image: UIImage? = nil
+	var m_selfie: UIImage? = nil
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 
-		self.photo.setBackgroundImage(m_image, for: .normal)
-		self.m_image = nil
+		self.photo.setBackgroundImage(m_selfie, for: .normal)
+		self.m_selfie = nil
+		
+		m_saveBtn.clipsToBounds = true
+		m_saveBtn.layer.cornerRadius = 25
 		
 		if let user = Auth.auth().currentUser {
             m_userId = user.uid
@@ -124,7 +129,7 @@ class ChangeVC: UIViewController {
 			refUser.child(DEF_USER_SEX).setValue(gender.selectedSegmentIndex)
 			refUser.child(DEF_USER_PHONE).setValue(phone.text)
 		
-			if let img = self.m_image {
+			if let img = self.m_selfie {
 				uploadImage(img)
 			}
 			
@@ -145,7 +150,7 @@ extension ChangeVC: UIImagePickerControllerDelegate, UINavigationControllerDeleg
 		}
 		
 		self.photo.setBackgroundImage(pickedImage, for: .normal)
-		self.m_image = pickedImage
+		self.m_selfie = pickedImage
 		picker.dismiss(animated: true)
 	}
 }

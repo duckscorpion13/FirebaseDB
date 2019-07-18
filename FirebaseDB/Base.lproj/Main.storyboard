@@ -132,7 +132,11 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="udq-yt-kZB">
-                                <rect key="frame" x="143" y="386.5" width="34" height="30"/>
+                                <rect key="frame" x="80" y="386.5" width="160" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="160" id="AmC-DG-wsO"/>
+                                    <constraint firstAttribute="height" constant="50" id="Nei-Q9-b1Z"/>
+                                </constraints>
                                 <state key="normal" title="Save"/>
                                 <connections>
                                     <action selector="save:" destination="BvR-qf-C0U" eventType="touchUpInside" id="UPd-fL-sti"/>
@@ -196,6 +200,7 @@
                     </view>
                     <connections>
                         <outlet property="gender" destination="I5e-LF-DFu" id="7LJ-vK-IJh"/>
+                        <outlet property="m_saveBtn" destination="udq-yt-kZB" id="JzY-dt-t1I"/>
                         <outlet property="name" destination="vEu-1x-Trm" id="Qes-yy-fjN"/>
                         <outlet property="phone" destination="x6B-Op-GmA" id="QiT-Ut-4ME"/>
                         <outlet property="photo" destination="bE4-Bd-xlA" id="PWH-0H-oHx"/>

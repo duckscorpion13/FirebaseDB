@@ -11,7 +11,7 @@ import FirebaseDatabase
 import FirebaseStorage
 
 
-class CollectionVC: UIViewController {
+class CollectionVC: BackgroundVC {
 	private let reuseIdentifier = "CollectionCell"
 
 	var m_isFilter = false
@@ -30,6 +30,28 @@ class CollectionVC: UIViewController {
 		// Uncomment the following line to preserve selection between presentations
 		// self.clearsSelectionOnViewWillAppear = false
 		
+		let search = UIImageView(image: UIImage(named: "search"))
+		search.backgroundColor = .white
+		self.view.addSubview(search)
+		search.translatesAutoresizingMaskIntoConstraints = false
+		search.heightAnchor.constraint(equalToConstant: 35).isActive = true
+		search.widthAnchor.constraint(equalTo: search.heightAnchor).isActive = true
+		search.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
+		search.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
+		
+		let field = UITextField(frame: .zero)
+		field.addTarget(self, action: #selector(fieldChange), for: .editingChanged)
+//		field.delegate = self
+		field.backgroundColor = .white
+		self.view.addSubview(field)
+		field.translatesAutoresizingMaskIntoConstraints = false
+		field.heightAnchor.constraint(equalToConstant: 35).isActive = true
+//		field.widthAnchor.constraint(equalToConstant: 180).isActive = true
+		field.leadingAnchor.constraint(equalTo: search.trailingAnchor).isActive = true
+		field.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
+		field.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
+//		field.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+		
 		let layout = UICollectionViewFlowLayout()
 		layout.headerReferenceSize = CGSize(width: fullScreenSize.width, height: 40)
 		self.m_collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -41,25 +63,39 @@ class CollectionVC: UIViewController {
 		self.m_collectionView.dataSource = self
 		
 	
+		let blurEffect = UIBlurEffect(style: .light)
+		let blurView = UIVisualEffectView(effect: blurEffect)
+		blurView.alpha = 0.8
+		self.m_collectionView.backgroundView = blurView
+		self.m_collectionView.backgroundColor = .clear
 		
 		self.view.addSubview(self.m_collectionView)
 		self.m_collectionView.translatesAutoresizingMaskIntoConstraints = false
-		self.m_collectionView.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
+		self.m_collectionView.topAnchor.constraint(equalTo: field.bottomAnchor).isActive = true
 //		self.m_collectionView.bottomAnchor.constraint(equalTo: self.view.readableContentGuide.bottomAnchor).isActive = true
 		self.m_collectionView.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 		self.m_collectionView.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
 		self.m_collectionView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 4/5).isActive = true
-		
-		
-		let field = UITextField(frame: .zero)
-		field.delegate = self
-		field.backgroundColor = .white
-		self.view.addSubview(field)
-		field.translatesAutoresizingMaskIntoConstraints = false
-		field.heightAnchor.constraint(equalToConstant: 35).isActive = true
-		field.widthAnchor.constraint(equalToConstant: 180).isActive = true
-		field.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
-		field.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+	}
+	@objc func fieldChange(_ sender: Any) {
+		if let field = sender as? UITextField,
+		let text = field.text,
+		text != "" {
+			self.m_filterRooms = self.m_rooms.filter({info in
+				if let title = info.title?.lowercased(),
+					let _ = title.range(of: text.lowercased()) {
+					return true
+				} else {
+					return false
+				}
+			})
+			self.m_isFilter = true
+		} else {
+			self.m_isFilter = false
+		}
+		DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+			self.m_collectionView.reloadData()
+		}
 	}
 	
 	fileprivate func getRoomsInfo() {
@@ -99,22 +135,22 @@ class CollectionVC: UIViewController {
 		setupCollectionView()
 		
 		getRoomsInfo()
-		
-		
-		
-		let btn = UIButton(frame: .zero)
+	
+		let btn = GradientButton(frame: CGRect(x: 0, y: 0, width: 160, height: 50), startColor: .orange, endColor: .blue, type: .GRADIENT_UP_TO_DOWN)
 		btn.setTitle("Create Room", for: .normal)
-		btn.setTitleColor(.blue, for: .normal)
-		btn.addTarget(self, action: #selector(clickTest), for: .touchUpInside)
+		btn.setTitleColor(.white, for: .normal)
+		btn.addTarget(self, action: #selector(clickCreate), for: .touchUpInside)
+
 		self.view.addSubview(btn)
 		btn.translatesAutoresizingMaskIntoConstraints = false
 		btn.heightAnchor.constraint(equalToConstant: 50).isActive = true
-		btn.widthAnchor.constraint(equalToConstant: 150).isActive = true
+		btn.widthAnchor.constraint(equalToConstant: 160).isActive = true
 		btn.bottomAnchor.constraint(equalTo: self.view.readableContentGuide.bottomAnchor, constant: -20).isActive = true
 		btn.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+
     }
 	
-	@objc func clickTest() {
+	@objc func clickCreate() {
 		openImgPicker()
 	}
 	
@@ -129,7 +165,7 @@ class CollectionVC: UIViewController {
 								let vc = RoomVC()
 								vc.m_room = ST_ROOM_INFO(number: number, members: nil, groups: nil, title: nil, message: nil, background: nil)
 								vc.m_user = user
-								//								vc.joinRoom()
+								vc.m_background = self.m_imgMap[room.key]
 //								vc.view.backgroundColor = .lightGray
 								self.present(vc, animated: true)
 							}
@@ -155,10 +191,6 @@ class CollectionVC: UIViewController {
 			refRoom.updateChildValues(["\(number)" : values]) {_,_ in
 				callback()
 			}
-//			refRoom.child(DEF_ROOM_HOST).setValue(myId)
-//			refRoom.child(DEF_ROOM_GROUP).setValue(1)
-//			refRoom.child(DEF_ROOM_TITLE).setValue(title)
-//			refRoom.child(DEF_ROOM_MESSAGE).setValue(message)
 
 			enterRoom(number)
 		}
@@ -167,15 +199,9 @@ class CollectionVC: UIViewController {
 	func getPhoto(_ roomNum: String) {
 		
 		let refRoom = Database.database().reference(withPath: "\(DEF_ROOM)/\(roomNum)")
-		//從database抓取url，再從storage下載圖片
-		//先在database找到存放url的路徑
-		//		ref = Database.database().reference(withPath: "ID/\(self.uid)/Profile/Photo")
-		//observe 到 .value
 		refRoom.child(DEF_ROOM_BACKGROUND).observe(.value) { (snapshot) in
-			//存放在這個 url
 			if let url = snapshot.value as? String {
 				let maxSize : Int64 =  2 * 1024 * 1024 //大小：2MB，可視情況改變
-				//從Storage抓這個圖片
 				Storage.storage().reference().child(url).getData(maxSize: maxSize) { (data, error) in
 					if error != nil {
 						print(error.debugDescription)
@@ -204,7 +230,6 @@ class CollectionVC: UIViewController {
 		let uniqueString = UUID().uuidString
 		let storageRef = Storage.storage().reference().child("\(uniqueString).jpg")
 		if let uploadData = image.jpegData(compressionQuality: 0.1) {
-			// 這行就是 FirebaseStorage 關鍵的存取方法。
 			storageRef.putData(uploadData, metadata: nil) { (data, error) in
 				if error != nil {
 					//					print("Error: \(error!.localizedDescription)")
@@ -230,10 +255,8 @@ class CollectionVC: UIViewController {
 	
 	func openImgPicker() {
 		
-		// 建立一個 UIImagePickerController 的實體
 		let picker = UIImagePickerController()
 		
-		// 委任代理
 		picker.delegate = self
 		
 		let alert = UIAlertController.selectAction(title: "Upload Picture", message: "Select Image", actions: ["Album", "Camera"]) { select in
@@ -305,42 +328,6 @@ extension CollectionVC: UICollectionViewDelegate, UICollectionViewDataSource {
 			self.enterRoom(roomNum)
 		}
 	}
-	
-//	func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//
-//	}
-	
-	
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
 
 }
 
@@ -394,57 +381,4 @@ extension CollectionVC: UIImagePickerControllerDelegate, UINavigationControllerD
 			self.present(alert, animated: true)
 		}
 	}
-}
-
-extension CollectionVC: UITextFieldDelegate {
-//	func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool // return NO to disallow editing.
-//
-//	@available(iOS 2.0, *)
-//	optional func textFieldDidBeginEditing(_ textField: UITextField) // became first responder
-//
-//	@available(iOS 2.0, *)
-//	optional
-	func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-		if let text = textField.text,
-		text != "" {
-			self.m_filterRooms = self.m_rooms.filter({info in
-				if let title = info.title?.lowercased(),
-					let _ = title.range(of: text.lowercased()) {
-					return true
-				} else {
-					return false
-				}
-			})
-			self.m_isFilter = true
-		} else {
-			self.m_isFilter = false
-		}
-		self.m_collectionView.reloadData()
-		
-		return true
-	}// return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
-//
-//	@available(iOS 2.0, *)
-//	optional func textFieldDidEndEditing(_ textField: UITextField) // may be called if forced even if shouldEndEditing returns NO (e.g. view removed from window) or endEditing:YES called
-//
-//	@available(iOS 10.0, *)
-//	optional func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) // if implemented, called in place of textFieldDidEndEditing:
-//
-//
-//	@available(iOS 2.0, *)
-//	optional
-//	func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-//		print("BBBBBBBBBBBBB")
-//
-//		return true
-//	}// return NO to not change text
-//
-//
-//	@available(iOS 2.0, *)
-//	optional
-//	func textFieldShouldClear(_ textField: UITextField) -> Bool {// called when clear button pressed. return NO to ignore (no notifications)
-//		return true
-//	}
-//	@available(iOS 2.0, *)
-//	optional func textFieldShouldReturn(_ textField: UITextField) -> Bool // called when 'return' key pressed. return NO to ignore.
 }

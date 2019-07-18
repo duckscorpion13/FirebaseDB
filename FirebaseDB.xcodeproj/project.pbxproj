@@ -14,6 +14,8 @@
 		048F310A1E433ECB007B579D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 048F31091E433ECB007B579D /* Assets.xcassets */; };
 		048F310D1E433ECB007B579D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 048F310B1E433ECB007B579D /* LaunchScreen.storyboard */; };
 		44AD9A6174E57C2B73E3288A /* Pods_FirebaseDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C180FFFF90CB99FF139021FC /* Pods_FirebaseDB.framework */; };
+		F9230BA022E04DE100E3E48A /* BackgroundVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9230B9F22E04DE100E3E48A /* BackgroundVC.swift */; };
+		F9230BA222E0559200E3E48A /* GradientButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9230BA122E0559200E3E48A /* GradientButton.swift */; };
 		F924CA4922C0DADB00F23169 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F924CA4822C0DADB00F23169 /* GoogleService-Info.plist */; };
 		F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9339E9622D5912700C3A795 /* DatabaseModel.swift */; };
 		F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96D1FE822D49153006F9242 /* RoomVC.swift */; };
@@ -37,6 +39,8 @@
 		7F8708F395E221B4FBAF6DC8 /* Pods-FirebaseDB.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirebaseDB.debug.xcconfig"; path = "Target Support Files/Pods-FirebaseDB/Pods-FirebaseDB.debug.xcconfig"; sourceTree = "<group>"; };
 		87A7E045E32522E15AF64FD0 /* Pods-FirebaseDB.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirebaseDB.release.xcconfig"; path = "Target Support Files/Pods-FirebaseDB/Pods-FirebaseDB.release.xcconfig"; sourceTree = "<group>"; };
 		C180FFFF90CB99FF139021FC /* Pods_FirebaseDB.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FirebaseDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9230B9F22E04DE100E3E48A /* BackgroundVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundVC.swift; sourceTree = "<group>"; };
+		F9230BA122E0559200E3E48A /* GradientButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientButton.swift; sourceTree = "<group>"; };
 		F924CA4822C0DADB00F23169 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		F9339E9622D5912700C3A795 /* DatabaseModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseModel.swift; sourceTree = "<group>"; };
 		F96D1FE822D49153006F9242 /* RoomVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomVC.swift; sourceTree = "<group>"; };
@@ -82,6 +86,8 @@
 			isa = PBXGroup;
 			children = (
 				F9ECC74722DC8F85002CF008 /* CollectionVC.swift */,
+				F9230BA122E0559200E3E48A /* GradientButton.swift */,
+				F9230B9F22E04DE100E3E48A /* BackgroundVC.swift */,
 				F9ECC74922DD6ECB002CF008 /* MyCollectionViewCell.swift */,
 				048F31021E433ECB007B579D /* AppDelegate.swift */,
 				F977DD3722D5D61B007A9BF8 /* LogInVC.swift */,
@@ -270,6 +276,8 @@
 				048F31051E433ECB007B579D /* SignUpVC.swift in Sources */,
 				048F31031E433ECB007B579D /* AppDelegate.swift in Sources */,
 				F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */,
+				F9230BA222E0559200E3E48A /* GradientButton.swift in Sources */,
+				F9230BA022E04DE100E3E48A /* BackgroundVC.swift in Sources */,
 				F9ECC74622DC6F5E002CF008 /* UIAlertController+.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

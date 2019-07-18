@@ -173,12 +173,14 @@ extension LoginVC: GIDSignInDelegate {
 											sex: dict[DEF_USER_SEX] as? Int)
 						let tabbarCtl = UITabBarController()
 						let vc1 = CheckVC()
-						vc1.view.backgroundColor = .gray
+				
+						
 						let vc2 = CollectionVC()
-						vc2.view.backgroundColor = .gray
+						vc2.m_background = UIImage(named: "tablegame")
 						vc2.m_user = user
 						vc1.tabBarItem = UITabBarItem(tabBarSystemItem: .history, tag: 0)
 						vc2.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
+						
 						tabbarCtl.viewControllers = [vc1, vc2]
 						self.present(tabbarCtl, animated: true)
 					}

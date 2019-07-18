@@ -12,7 +12,7 @@ import FirebaseAuth
 import FirebaseDatabase
 import FirebaseStorage
 
-class CheckVC: UIViewController {
+class CheckVC: BackgroundVC {
 
 	//Firebase load image
 	var m_imgView: UIImageView!
@@ -101,6 +101,7 @@ class CheckVC: UIViewController {
 		for title in titles {
 			let lbl = UILabel(frame: .zero)
 			lbl.text = title + " : "
+			lbl.textColor = .yellow
 			lbl.font = .boldSystemFont(ofSize: 16)
 			lblArray.append(lbl)
 		}
@@ -262,8 +263,8 @@ class CheckVC: UIViewController {
 		let storyboard = UIStoryboard(name: "Main", bundle: nil)
 		if let vc = storyboard.instantiateViewController(withIdentifier: "ChangeDataViewControllerID") as? ChangeVC {
 			if let img = self.m_imgView.image {
-				print(img.size)
-				vc.m_image = img
+//				print(img.size)
+				vc.m_selfie = img
 			}
 			self.present(vc, animated: true)
 		}

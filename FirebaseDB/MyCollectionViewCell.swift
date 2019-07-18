@@ -24,7 +24,7 @@ class MyCollectionViewCell: UICollectionViewCell {
 		// 建立一個 UILabel
 		titleLabel = UILabel(frame:CGRect(x: 0, y: frame.height - titleHeight, width: frame.width, height: titleHeight))
 		titleLabel.textAlignment = .center
-		titleLabel.textColor = UIColor.orange
+		titleLabel.textColor = .white
 		self.addSubview(titleLabel)
 	}
 	
