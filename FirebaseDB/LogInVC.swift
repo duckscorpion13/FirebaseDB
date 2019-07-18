@@ -13,7 +13,7 @@ import FirebaseDatabase
 import GoogleSignIn
 
 
-class LoginVC: UIViewController {
+class LoginVC: BackgroundVC {
     
 	@IBOutlet weak var signBtn: GIDSignInButton!	
 	@IBOutlet weak var Email: UITextField!
@@ -26,6 +26,9 @@ class LoginVC: UIViewController {
         // Do any additional setup after loading the view, typically from a nib.
 		GIDSignIn.sharedInstance().uiDelegate = self
 		GIDSignIn.sharedInstance().delegate = self
+		
+		Email.delegate = self
+		Password.delegate = self
     }
     
     override func didReceiveMemoryWarning() {
@@ -87,19 +90,14 @@ class LoginVC: UIViewController {
 
         if self.Email.text != "" || self.Password.text != ""{
 			
-			Auth.auth().signIn(withEmail: self.Email.text!, password: self.Password.text!, completion: { (user, error) in
+			Auth.auth().signIn(withEmail: self.Email.text!, password: self.Password.text!, completion: { (authResult, error) in
                 
                 if error == nil {
 					if let user = Auth.auth().currentUser{
                         self.m_uid = user.uid
                     }
                     
-                    // Online-Status when login success ,Online-Status->On
-					Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
-                    
-                    //go CheckVC
-					let vc = CheckVC()
-					self.present(vc, animated: true)
+                    self.loginSuccess(authResult)
 					
 				} else {
 					print(error.debugDescription)
@@ -129,9 +127,43 @@ extension LoginVC: GIDSignInDelegate {
 	@available(iOS 9.0, *)
 	func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any])
 		-> Bool {
-			return GIDSignIn.sharedInstance().handle(url,
-													 sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String,
-													 annotation: [:])
+			return GIDSignIn.sharedInstance().handle(url, sourceApplication:options[UIApplication.OpenURLOptionsKey.sourceApplication] as? String, annotation: [:])
+	}
+	
+	fileprivate func loginSuccess(_ authResult: AuthDataResult?) {
+		// User is signed in
+		//			print(authResult?.user)
+		if let uid = authResult?.user.uid {
+			self.m_uid = uid
+			let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_uid)")
+			refUser.observeSingleEvent(of: .value) { (snapshot) in
+				if !snapshot.hasChildren() {
+					refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
+					refUser.child(DEF_USER_MAIL).setValue(authResult?.user.email ?? nil)
+				}
+				Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
+				if let dict = snapshot.value as? [String : Any] {
+					let user = ST_USER_INFO(uid: snapshot.key,
+											mail: dict[DEF_USER_MAIL] as? String,
+											phone: dict[DEF_USER_PHONE] as? String,
+											name: dict[DEF_USER_NAME] as? String,
+											photo: dict[DEF_USER_PHOTO] as? String,
+											sex: dict[DEF_USER_SEX] as? Int)
+					let tabbarCtl = UITabBarController()
+					let vc1 = CheckVC()
+					
+					
+					let vc2 = CollectionVC()
+					vc2.m_background = UIImage(named: "tablegame")
+					vc2.m_user = user
+					vc1.tabBarItem = UITabBarItem(tabBarSystemItem: .history, tag: 0)
+					vc2.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
+					
+					tabbarCtl.viewControllers = [vc1, vc2]
+					self.present(tabbarCtl, animated: true)
+				}
+			}
+		}
 	}
 	
 	func sign(_ signIn: GIDSignIn!, didSignInFor user: GIDGoogleUser!, withError error: Error?) {
@@ -153,39 +185,7 @@ extension LoginVC: GIDSignInDelegate {
 				print(error)
 				return
 			}
-			// User is signed in
-//			print(authResult?.user)
-			if let uid = authResult?.user.uid {
-				self.m_uid = uid
-				let refUser = Database.database().reference(withPath: "\(DEF_USER)/\(self.m_uid)")
-				refUser.observeSingleEvent(of: .value) { (snapshot) in
-					if !snapshot.hasChildren() {
-						refUser.child(DEF_USER_NAME).setValue(authResult?.user.displayName ?? nil)
-						refUser.child(DEF_USER_MAIL).setValue(authResult?.user.email ?? nil)
-					}
-					Database.database().reference(withPath: "Online-Status/\(self.m_uid)").setValue("ON")
-					if let dict = snapshot.value as? [String : Any] {
-						let user = ST_USER_INFO(uid: snapshot.key,
-											mail: dict[DEF_USER_MAIL] as? String,
-											phone: dict[DEF_USER_PHONE] as? String,
-											name: dict[DEF_USER_NAME] as? String,
-											photo: dict[DEF_USER_PHOTO] as? String,
-											sex: dict[DEF_USER_SEX] as? Int)
-						let tabbarCtl = UITabBarController()
-						let vc1 = CheckVC()
-				
-						
-						let vc2 = CollectionVC()
-						vc2.m_background = UIImage(named: "tablegame")
-						vc2.m_user = user
-						vc1.tabBarItem = UITabBarItem(tabBarSystemItem: .history, tag: 0)
-						vc2.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 1)
-						
-						tabbarCtl.viewControllers = [vc1, vc2]
-						self.present(tabbarCtl, animated: true)
-					}
-				}
-			}
+			self.loginSuccess(authResult)
 		}
 	}
 	

@@ -275,10 +275,6 @@ class CollectionVC: BackgroundVC {
 		// 當使用者按下 uploadBtnAction 時會 present 剛剛建立好的三個 UIAlertAction 動作與
 		present(alert, animated: true)
 	}
-	
-	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-		self.view.endEditing(true)
-	}
 }
     /*
     // MARK: - Navigation

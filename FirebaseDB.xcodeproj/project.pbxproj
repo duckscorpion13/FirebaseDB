@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		044FE5091E4480B700A7B5F5 /* ChangeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 044FE5081E4480B700A7B5F5 /* ChangeVC.swift */; };
 		048F31031E433ECB007B579D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31021E433ECB007B579D /* AppDelegate.swift */; };
 		048F31051E433ECB007B579D /* SignUpVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048F31041E433ECB007B579D /* SignUpVC.swift */; };
 		048F31081E433ECB007B579D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 048F31061E433ECB007B579D /* Main.storyboard */; };
@@ -21,6 +20,7 @@
 		F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F96D1FE822D49153006F9242 /* RoomVC.swift */; };
 		F977DD3822D5D61B007A9BF8 /* LogInVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F977DD3722D5D61B007A9BF8 /* LogInVC.swift */; };
 		F977DD3A22D6EC49007A9BF8 /* MyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */; };
+		F995D85A22E0647200C5D642 /* ModifyVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F995D85922E0647200C5D642 /* ModifyVC.swift */; };
 		F9ECC74622DC6F5E002CF008 /* UIAlertController+.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */; };
 		F9ECC74822DC8F85002CF008 /* CollectionVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74722DC8F85002CF008 /* CollectionVC.swift */; };
 		F9ECC74A22DD6ECB002CF008 /* MyCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9ECC74922DD6ECB002CF008 /* MyCollectionViewCell.swift */; };
@@ -28,7 +28,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		044FE5081E4480B700A7B5F5 /* ChangeVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeVC.swift; sourceTree = "<group>"; };
 		048F30FF1E433ECB007B579D /* FirebaseDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirebaseDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		048F31021E433ECB007B579D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		048F31041E433ECB007B579D /* SignUpVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpVC.swift; sourceTree = "<group>"; };
@@ -46,6 +45,7 @@
 		F96D1FE822D49153006F9242 /* RoomVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomVC.swift; sourceTree = "<group>"; };
 		F977DD3722D5D61B007A9BF8 /* LogInVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInVC.swift; sourceTree = "<group>"; };
 		F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyTableViewCell.swift; sourceTree = "<group>"; };
+		F995D85922E0647200C5D642 /* ModifyVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModifyVC.swift; sourceTree = "<group>"; };
 		F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+.swift"; sourceTree = "<group>"; };
 		F9ECC74722DC8F85002CF008 /* CollectionVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionVC.swift; sourceTree = "<group>"; };
 		F9ECC74922DD6ECB002CF008 /* MyCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 				F977DD3922D6EC49007A9BF8 /* MyTableViewCell.swift */,
 				048F31041E433ECB007B579D /* SignUpVC.swift */,
 				F9ECC74B22DDB311002CF008 /* CheckVC.swift */,
-				044FE5081E4480B700A7B5F5 /* ChangeVC.swift */,
+				F995D85922E0647200C5D642 /* ModifyVC.swift */,
 				F9ECC74522DC6F5E002CF008 /* UIAlertController+.swift */,
 				048F31061E433ECB007B579D /* Main.storyboard */,
 				F9339E9622D5912700C3A795 /* DatabaseModel.swift */,
@@ -272,7 +272,7 @@
 				F96D1FE922D49153006F9242 /* RoomVC.swift in Sources */,
 				F977DD3822D5D61B007A9BF8 /* LogInVC.swift in Sources */,
 				F9ECC74822DC8F85002CF008 /* CollectionVC.swift in Sources */,
-				044FE5091E4480B700A7B5F5 /* ChangeVC.swift in Sources */,
+				F995D85A22E0647200C5D642 /* ModifyVC.swift in Sources */,
 				048F31051E433ECB007B579D /* SignUpVC.swift in Sources */,
 				048F31031E433ECB007B579D /* AppDelegate.swift in Sources */,
 				F9339E9722D5912700C3A795 /* DatabaseModel.swift in Sources */,

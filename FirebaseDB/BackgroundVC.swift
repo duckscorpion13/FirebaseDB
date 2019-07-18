@@ -31,6 +31,10 @@ class BackgroundVC: UIViewController {
 		imgView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true		
 	}
 	
+	override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+		self.view.endEditing(true)
+	}
+	
     /*
     // MARK: - Navigation
 
@@ -41,4 +45,28 @@ class BackgroundVC: UIViewController {
     }
     */
 
+}
+
+extension BackgroundVC: UITextFieldDelegate {
+	
+	func textFieldDidEndEditing(_ textField: UITextField) {
+		
+		textField.resignFirstResponder()
+		
+		UIView.animate(withDuration: 0.4) {
+			self.view.frame.origin.y = 0
+		}
+	}
+	
+	func textFieldDidBeginEditing(_ textField: UITextField)  {
+		
+		UIView.animate(withDuration: 0.4) {
+			self.view.frame.origin.y = -150
+		}
+	}
+	
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		textField.resignFirstResponder()
+		return true
+	}
 }
