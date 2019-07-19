@@ -11,6 +11,7 @@ import UIKit
 class BackgroundVC: UIViewController {
 
 	var m_background: UIImage? = nil
+	var m_isMove = true
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,8 +48,10 @@ class BackgroundVC: UIViewController {
 		if let userInfo = notification.userInfo {
 			if let keyboardSize = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
 //				print("keyboardDidShow: \(keyboardSize)")
-				UIView.animate(withDuration: 0.4) {
-					self.view.frame.origin.y = -keyboardSize.height
+				if(m_isMove) {
+					UIView.animate(withDuration: 0.4) {
+						self.view.frame.origin.y = -keyboardSize.height
+					}
 				}
 			}
 		}
@@ -56,9 +59,12 @@ class BackgroundVC: UIViewController {
 	
 	@objc func keyboardWillHide(notification: Notification)
 	{
-		UIView.animate(withDuration: 0.4) {
-			self.view.frame.origin.y = 0
+		if(m_isMove) {
+			UIView.animate(withDuration: 0.4) {
+				self.view.frame.origin.y = 0
+			}
 		}
+		self.m_isMove = true
 	}
     /*
     // MARK: - Navigation

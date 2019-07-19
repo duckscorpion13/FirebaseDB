@@ -41,6 +41,7 @@ class CollectionVC: BackgroundVC {
 		
 		let field = UITextField(frame: .zero)
 		field.addTarget(self, action: #selector(fieldChange), for: .editingChanged)
+		field.addTarget(self, action: #selector(fieldEnter), for: .touchDown)
 //		field.delegate = self
 		field.backgroundColor = .white
 		self.view.addSubview(field)
@@ -76,6 +77,9 @@ class CollectionVC: BackgroundVC {
 		self.m_collectionView.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 		self.m_collectionView.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
 		self.m_collectionView.heightAnchor.constraint(equalTo: self.view.readableContentGuide.heightAnchor, multiplier: 4/5).isActive = true
+	}
+	@objc func fieldEnter() {
+		self.m_isMove = false
 	}
 	@objc func fieldChange(_ sender: Any) {
 		if let field = sender as? UITextField,
