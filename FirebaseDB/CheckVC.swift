@@ -279,11 +279,7 @@ class CheckVC: BackgroundVC {
 		// Authentication 也 SignOut
 		try! Auth.auth().signOut()
 		
-		// go LogInVC
-		let storyboard = UIStoryboard(name: "Main", bundle: nil)
-		if let vc = storyboard.instantiateViewController(withIdentifier: "LogInViewControllerID") as? LoginVC {
-			self.present(vc, animated:true)
-		}
+		self.dismiss(animated: true)
 	}
 
 	override func viewDidAppear(_ animated: Bool) {
