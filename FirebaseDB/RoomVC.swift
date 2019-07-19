@@ -46,7 +46,7 @@ class RoomVC: BackgroundVC {
 		
 		let refresh = UIRefreshControl()
 		refresh.addTarget(self, action: #selector(refetch), for: .valueChanged)
-		refresh.backgroundColor = .white
+		refresh.backgroundColor = .clear
 		if #available(iOS 10.0, *) {
 			self.m_tableView.refreshControl = refresh
 		} else {
@@ -75,7 +75,6 @@ class RoomVC: BackgroundVC {
 	
 	@objc func refetch(_ sender: Any) {
 		if let refresh = sender as? UIRefreshControl {
-			print("aaaaaa")
 			if(m_isHost) {
 				switch self.m_tableType {
 				case .TABLE_BY_GROUP:
