@@ -475,8 +475,9 @@ class RoomVC: BackgroundVC {
 	
 		
 		self.m_stackBtns = UIStackView(arrangedSubviews: [btn1, btn2, btn3])
+	
 		if let stack = self.m_stackBtns {
-			
+			stack.isHidden = true
 			stack.alignment = .center
 			stack.distribution = .equalSpacing
 			view.addSubview(stack)

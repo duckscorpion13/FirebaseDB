@@ -60,3 +60,24 @@ class GradientButton: UIButton {
     */
 
 }
+
+
+extension CAGradientLayer {
+	convenience init(startColor: UIColor, endColor: UIColor, type: EN_GRADIENT_TYPE = .GRADIENT_LEFTUP_TO_RIGHTDOWN) {
+		self.init()
+		
+		switch type {
+		case .GRADIENT_UP_TO_DOWN:
+			self.startPoint = CGPoint(x: 0, y: 0)
+			self.endPoint = CGPoint(x: 0, y: 1)
+		case .GRADIENT_LEFT_TO_RIGHT:
+			self.startPoint = CGPoint(x: 0, y: 0)
+			self.endPoint = CGPoint(x: 1, y: 0)
+		default:
+			self.startPoint = CGPoint(x: 0, y: 0)
+			self.endPoint = CGPoint(x: 1, y: 1)
+		}
+		
+		self.colors = [startColor.cgColor, endColor.cgColor]
+	}
+}

@@ -20,6 +20,9 @@ class MyCollectionViewCell: UICollectionViewCell {
 		imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height - titleHeight))
 		imageView.contentMode = .scaleAspectFit
 		self.addSubview(imageView)
+		imageView.clipsToBounds = true
+		imageView.layer.cornerRadius = 30
+		
 		
 		// 建立一個 UILabel
 		titleLabel = UILabel(frame:CGRect(x: 0, y: frame.height - titleHeight, width: frame.width, height: titleHeight))

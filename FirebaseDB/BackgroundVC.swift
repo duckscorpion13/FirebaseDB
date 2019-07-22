@@ -13,6 +13,9 @@ class BackgroundVC: UIViewController {
 	var m_background: UIImage? = nil
 	var m_isMove = true
 	
+	var m_gradientLayer: CAGradientLayer? = nil
+	var m_targetView: UIView? = nil
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -29,7 +32,7 @@ class BackgroundVC: UIViewController {
 		NotificationCenter.default.removeObserver(self)
 	}
 	
-	fileprivate func setupBackground(_ image: UIImage) {
+	func setupBackground(_ image: UIImage) {
 		let imgView = UIImageView(image: image)
 		self.view.addSubview(imgView)
 		imgView.translatesAutoresizingMaskIntoConstraints = false
@@ -65,6 +68,16 @@ class BackgroundVC: UIViewController {
 			}
 		}
 		self.m_isMove = true
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		
+		if let gradient = self.m_gradientLayer,
+		let target = self.m_targetView {
+//			print(target.bounds)
+			gradient.frame = target.frame
+		}
 	}
     /*
     // MARK: - Navigation

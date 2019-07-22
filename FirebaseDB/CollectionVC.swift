@@ -30,15 +30,6 @@ class CollectionVC: BackgroundVC {
 		// Uncomment the following line to preserve selection between presentations
 		// self.clearsSelectionOnViewWillAppear = false
 		
-		let search = UIImageView(image: UIImage(named: "search"))
-		search.backgroundColor = .white
-		self.view.addSubview(search)
-		search.translatesAutoresizingMaskIntoConstraints = false
-		search.heightAnchor.constraint(equalToConstant: 35).isActive = true
-		search.widthAnchor.constraint(equalTo: search.heightAnchor).isActive = true
-		search.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
-		search.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
-		
 		let field = UITextField(frame: .zero)
 		field.addTarget(self, action: #selector(fieldChange), for: .editingChanged)
 		field.addTarget(self, action: #selector(fieldEnter), for: .touchDown)
@@ -48,10 +39,20 @@ class CollectionVC: BackgroundVC {
 		field.translatesAutoresizingMaskIntoConstraints = false
 		field.heightAnchor.constraint(equalToConstant: 35).isActive = true
 //		field.widthAnchor.constraint(equalToConstant: 180).isActive = true
-		field.leadingAnchor.constraint(equalTo: search.trailingAnchor).isActive = true
-		field.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
+		field.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor, constant: 15).isActive = true
+//		field.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
 		field.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
 //		field.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+		
+		let search = UIImageView(image: UIImage(named: "search"))
+		search.backgroundColor = .white
+		self.view.addSubview(search)
+		search.translatesAutoresizingMaskIntoConstraints = false
+		search.heightAnchor.constraint(equalToConstant: 35).isActive = true
+		search.widthAnchor.constraint(equalTo: search.heightAnchor).isActive = true
+		search.leadingAnchor.constraint(equalTo: field.trailingAnchor).isActive = true
+		search.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor, constant: -15).isActive = true
+		search.topAnchor.constraint(equalTo: self.view.readableContentGuide.topAnchor).isActive = true
 		
 		let layout = UICollectionViewFlowLayout()
 		layout.headerReferenceSize = CGSize(width: fullScreenSize.width, height: 40)

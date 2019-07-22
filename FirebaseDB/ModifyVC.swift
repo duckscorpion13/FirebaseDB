@@ -14,15 +14,15 @@ import FirebaseStorage
 
 class ModifyVC: BackgroundVC {
 	
-		var m_photoBtn: UIButton!
+	var m_photoBtn: UIButton!
+
+	var m_nameField = UITextField()
+	var m_phoneField = UITextField()
+	var m_sexSegment = UISegmentedControl()
 	
-		var m_nameField = UITextField()
-		var m_phoneField = UITextField()
-		var m_sexSegment = UISegmentedControl()
-		
-		var m_userId = ""
-		var m_selfie: UIImage? = nil
-		
+	var m_userId = ""
+	var m_selfie: UIImage? = nil
+	
 	fileprivate func getUserInfo() {
 		if let user = Auth.auth().currentUser {
 			m_userId = user.uid
@@ -49,10 +49,7 @@ class ModifyVC: BackgroundVC {
 		})
 	}
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		
-	
+	fileprivate func setupBtns() {
 		self.m_photoBtn = UIButton(frame: .zero)
 		self.m_photoBtn.addTarget(self, action: #selector(openImagePicker), for: .touchUpInside)
 		self.m_photoBtn.setTitle("Change", for: .normal)
@@ -65,7 +62,7 @@ class ModifyVC: BackgroundVC {
 		self.m_photoBtn.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
 		self.m_photoBtn.setBackgroundImage(m_selfie, for: .normal)
 		self.m_selfie = nil
-	
+		
 		let saveBtn = GradientButton(frame: CGRect(x: 0, y: 0, width: 150, height: 45), startColor: .orange, endColor: .green, type: .GRADIENT_LEFTUP_TO_RIGHTDOWN)
 		saveBtn.addTarget(self, action: #selector(clickSave), for: .touchUpInside)
 		saveBtn.setTitle("Save", for: .normal)
@@ -76,33 +73,89 @@ class ModifyVC: BackgroundVC {
 		saveBtn.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
 		saveBtn.widthAnchor.constraint(equalToConstant: 150).isActive = true
 		saveBtn.heightAnchor.constraint(equalToConstant: 45).isActive = true
+	}
 	
+	fileprivate func setupFields() {
 		self.m_nameField.backgroundColor = .white
 		self.m_nameField.textColor = .blue
 		self.m_nameField.textAlignment = .center
 		self.m_nameField.placeholder = "Name"
+		self.m_nameField.clipsToBounds = true
+		self.m_nameField.layer.cornerRadius = 15
+	
+		
+		self.view.addSubview(self.m_nameField)
+		self.m_nameField.translatesAutoresizingMaskIntoConstraints = false
+		self.m_nameField.topAnchor.constraint(equalTo: m_photoBtn.bottomAnchor, constant: 20).isActive = true
+		self.m_nameField.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+		self.m_nameField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		self.m_nameField.widthAnchor.constraint(equalToConstant: 280).isActive = true
 		
 		self.m_sexSegment.insertSegment(withTitle: "?", at: 0, animated: true)
 		self.m_sexSegment.insertSegment(withTitle: "♂︎", at: 1, animated: true)
 		self.m_sexSegment.insertSegment(withTitle: "♀︎", at: 2, animated: true)
+		self.m_sexSegment.setTitleTextAttributes([.font: UIFont.systemFont(ofSize: 35) ], for: .normal)
+
+		
+		self.view.addSubview(self.m_sexSegment)
+		self.m_sexSegment.translatesAutoresizingMaskIntoConstraints = false
+		self.m_sexSegment.topAnchor.constraint(equalTo: m_nameField.bottomAnchor, constant: 20).isActive = true
+		self.m_sexSegment.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+		self.m_sexSegment.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		self.m_sexSegment.widthAnchor.constraint(equalToConstant: 280).isActive = true
 		
 		self.m_phoneField.backgroundColor = .white
 		self.m_phoneField.textColor = .blue
 		self.m_phoneField.textAlignment = .center
 		self.m_phoneField.placeholder = "Phone"
+		self.m_phoneField.clipsToBounds = true
+		self.m_phoneField.layer.cornerRadius = 15
 		
-		let stack = UIStackView(arrangedSubviews: [self.m_nameField, self.m_sexSegment, self.m_phoneField])
-		stack.alignment = .fill
-		stack.axis = .vertical
-		stack.distribution = .fill
-		stack.spacing = 25
+		self.view.addSubview(self.m_phoneField)
+		self.m_phoneField.translatesAutoresizingMaskIntoConstraints = false
+		self.m_phoneField.topAnchor.constraint(equalTo: m_sexSegment.bottomAnchor, constant: 20).isActive = true
+		self.m_phoneField.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
+		self.m_phoneField.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		self.m_phoneField.widthAnchor.constraint(equalToConstant: 280).isActive = true
 		
-		self.view.addSubview(stack)
-		stack.translatesAutoresizingMaskIntoConstraints = false
-		stack.topAnchor.constraint(equalTo: self.m_photoBtn.bottomAnchor, constant: 30).isActive = true
-		stack.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
-		stack.widthAnchor.constraint(equalToConstant: 260).isActive = true
-		stack.heightAnchor.constraint(equalToConstant: 160).isActive = true
+	}
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		if let img = UIImage(named: "modify") {
+			self.setupBackground(img)
+		}
+		
+		setupBtns()
+	
+		setupFields()
+		
+//		let stack = UIStackView(arrangedSubviews: [self.m_nameField, self.m_sexSegment, self.m_phoneField])
+//		stack.alignment = .fill
+//		stack.axis = .vertical
+//		stack.distribution = .fillEqually
+//		stack.spacing = 25
+//
+//		self.view.addSubview(stack)
+//		stack.translatesAutoresizingMaskIntoConstraints = false
+//		stack.topAnchor.constraint(equalTo: self.m_photoBtn.bottomAnchor, constant: 30).isActive = true
+//		stack.centerXAnchor.constraint(equalTo: self.view.readableContentGuide.centerXAnchor).isActive = true
+//		stack.widthAnchor.constraint(equalToConstant: 260).isActive = true
+//		stack.bottomAnchor.constraint(equalTo: self.view.readableContentGuide.bottomAnchor, constant: -65).isActive = true
+//
+//		self.m_nameField.topAnchor.constraint(equalTo: stack.topAnchor, constant: 10).isActive = true
+//		self.m_phoneField.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: -10).isActive = true
+		
+			
+//		self.m_gradientLayer = CAGradientLayer.init(startColor: .orange, endColor: .yellow)
+//		if let gradient = self.m_gradientLayer {
+//			self.m_targetView = stack
+//			let subView = UIView(frame: .zero)
+//			subView.layer.zPosition = -1
+//			subView.layer.addSublayer(gradient)
+//			view.addSubview(subView)
+//		}
 		
 		self.getUserInfo()
 	}

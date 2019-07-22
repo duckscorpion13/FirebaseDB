@@ -28,6 +28,8 @@ class CheckVC: BackgroundVC {
 	var changePersonalInfo: UIButton!
 
 	var m_user: ST_USER_INFO? = nil
+	
+
 		
 	fileprivate func setupTestUI() {
 		let btn = UIButton(frame: CGRect(x: 30, y: 30, width: 50, height: 50))
@@ -93,7 +95,7 @@ class CheckVC: BackgroundVC {
 		self.m_phoneLbl = UILabel(frame: .zero)
 		let checkArray: [UILabel] = [self.m_nameLbl, self.m_sexLbl, self.m_mailLbl, self.m_phoneLbl]
 		for lbl in checkArray {
-			lbl.textColor = .white
+			lbl.textColor = .gray
 		}
 		
 		let titles = ["Name", "Sex", "Mail", "Phone"]
@@ -102,17 +104,18 @@ class CheckVC: BackgroundVC {
 			let lbl = UILabel(frame: .zero)
 			lbl.text = title + " : "
 			lbl.textColor = .yellow
-			lbl.font = .boldSystemFont(ofSize: 16)
+			lbl.font = .boldSystemFont(ofSize: 18)
 			lblArray.append(lbl)
 		}
 		
 		let stackLeft = UIStackView(arrangedSubviews: lblArray)
 		stackLeft.axis = .vertical
 		stackLeft.distribution = .fillEqually
+		stackLeft.widthAnchor.constraint(equalToConstant: 65).isActive = true
 		let stackRight = UIStackView(arrangedSubviews: checkArray)
 		stackRight.axis = .vertical
 		stackRight.distribution = .fillEqually
-		stackRight.widthAnchor.constraint(equalToConstant: 230).isActive = true
+	
 		self.m_stackLbls = UIStackView(arrangedSubviews: [stackLeft, stackRight])
 		self.m_stackLbls.axis = .horizontal
 		self.m_stackLbls.alignment = .fill
@@ -121,10 +124,10 @@ class CheckVC: BackgroundVC {
 		
 		self.view.addSubview(self.m_stackLbls)
 		self.m_stackLbls.translatesAutoresizingMaskIntoConstraints = false
-		self.m_stackLbls.topAnchor.constraint(equalTo: self.m_imgView.bottomAnchor).isActive = true
+		self.m_stackLbls.topAnchor.constraint(equalTo: self.m_imgView.bottomAnchor, constant: 10).isActive = true
 //		self.m_stackLbls.leadingAnchor.constraint(equalTo: self.view.readableContentGuide.leadingAnchor).isActive = true
 //		self.m_stackLbls.trailingAnchor.constraint(equalTo: self.view.readableContentGuide.trailingAnchor).isActive = true
-		self.m_stackLbls.bottomAnchor.constraint(equalTo: self.m_stackBtns.readableContentGuide.topAnchor).isActive = true
+		self.m_stackLbls.bottomAnchor.constraint(equalTo: self.m_stackBtns.topAnchor, constant: -10).isActive = true
 		self.m_stackLbls.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
 		self.m_stackLbls.widthAnchor.constraint(equalToConstant: 300).isActive = true
 	}
@@ -155,13 +158,22 @@ class CheckVC: BackgroundVC {
 //		setupTestUI()
 	
 		setupBtnStack()
-				
+		
 		setupImgView()
 		
 		setupLblStack()
-
-	}
+	
+		self.m_gradientLayer = CAGradientLayer.init(startColor: .orange, endColor: .yellow)
+		if let gradient = self.m_gradientLayer {
+			self.m_targetView = self.m_stackLbls
+			let subView = UIView(frame: .zero)
+			subView.layer.zPosition = -1
+			subView.layer.addSublayer(gradient)
+			view.addSubview(subView)
+		}
 		
+	}
+	
 	@objc func clickRooms() {
 		let vc = CollectionVC()
 		vc.view.backgroundColor = .lightGray
