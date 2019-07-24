@@ -81,3 +81,15 @@ extension UIAlertController {
 		return alert
 	}
 }
+
+
+extension UIViewController {
+	func checkPresent(_ viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)? = nil) {
+		if let popoverController = viewControllerToPresent.popoverPresentationController {
+			popoverController.sourceView = self.view
+			popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+			popoverController.permittedArrowDirections = []
+		}
+		self.present(viewControllerToPresent, animated: flag, completion: completion)
+	}
+}

@@ -159,7 +159,7 @@ class RoomVC: BackgroundVC {
 					self.dismiss(animated: true)
 				}
 			}
-			self.present(alert, animated: true)
+			self.checkPresent(alert, animated: true)
 		} else {
 			self.dismiss(animated: true)
 		}
@@ -285,7 +285,7 @@ class RoomVC: BackgroundVC {
 				}
 			}
 		}
-		self.present(alert, animated: true)
+		self.checkPresent(alert, animated: true)
 	}
 	
 	fileprivate func buildGroupArray(_ max: Int) {
@@ -337,7 +337,7 @@ class RoomVC: BackgroundVC {
 				self.m_segment.selectedSegmentIndex = self.m_tableType.rawValue
 			}
 		}
-		self.present(alert, animated: true)
+		self.checkPresent(alert, animated: true)
 	}
 	
 	fileprivate func buildSortArray(_ randArray: [Int]) {
@@ -538,7 +538,7 @@ class RoomVC: BackgroundVC {
 				self.addMember(name)
 			}
 		}
-		self.present(alert, animated: true)
+		self.checkPresent(alert, animated: true)
 	}
 	
     /*
@@ -635,7 +635,7 @@ extension RoomVC: UITableViewDelegate, UITableViewDataSource {
 				let alert = UIAlertController.checkAction(title: "Expel", message: "ban \(name), sure?") {
 					self.expel(uid)
 				}
-				self.present(alert, animated: true)
+				self.checkPresent(alert, animated: true)
 			}
 				
 		}
@@ -650,7 +650,7 @@ extension RoomVC: MyTableViewCellDelegate {
 			let alert = UIAlertController.checkAction(title: "Vote", message: "vote \(name) sure?") {
 				self.vote(uid)
 			}
-			self.present(alert, animated: true)
+			self.checkPresent(alert, animated: true)
 		}
 	}
 }

@@ -196,8 +196,6 @@ class CollectionVC: BackgroundVC {
 			refRoom.updateChildValues(["\(number)" : values]) {_,_ in
 				callback()
 			}
-
-			enterRoom(number)
 		}
 	}
 	
@@ -278,7 +276,7 @@ class CollectionVC: BackgroundVC {
 			}
 		}
 		// 當使用者按下 uploadBtnAction 時會 present 剛剛建立好的三個 UIAlertAction 動作與
-		present(alert, animated: true)
+		self.checkPresent(alert, animated: true)
 	}
 }
     /*
@@ -370,16 +368,19 @@ extension CollectionVC: UIImagePickerControllerDelegate, UINavigationControllerD
 			let alert = UIAlertController.textsAlert(title: "New", message: "Create Room", placeholders: ["Title", "Message", "Number"]) {
 				para in
 				if (3 == para.count) {
-					if let num = Int(para[2]) {
+					let numStr = para[2]
+					if let num = Int(numStr) {
 						self.createRoom(num, title: para[0], message: para[1]) {
 							if let img = self.m_image {
+								self.m_imgMap[numStr] = img
 								self.uploadImage(img, roomNum: num)
+								self.enterRoom(num)
 							}
 						}
 					}
 				}
 			}
-			self.present(alert, animated: true)
+			self.checkPresent(alert, animated: true)
 		}
 	}
 }

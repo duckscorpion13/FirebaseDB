@@ -180,7 +180,7 @@ class ModifyVC: BackgroundVC {
 				}
 			}
 		}
-		present(alert, animated: true)
+		checkPresent(alert, animated: true)
 		
 	}
 		
